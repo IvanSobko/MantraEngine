@@ -6,9 +6,9 @@
 extern Mantra::Application* Mantra::CreateApplication();
 
 int main(int argc, char** argv) {
-	auto app = Mantra::CreateApplication();
-	app->Run();
-	delete app;
+    auto app = Mantra::CreateApplication();
+    app->Run();
+    delete app;
 }
 
 #endif

@@ -4,16 +4,16 @@
 
 namespace Mantra {
 
-	class MANTRA_API Application
-	{
-	public:
-		Application();
-		virtual ~Application();
+class MANTRA_API Application
+{
+public:
+    Application();
+    virtual ~Application();
 
-		void Run();
-	};
+    void Run();
+};
 
-	// To be defined in CLIENT
-	Application* CreateApplication();
+// To be defined in CLIENT
+Application* CreateApplication();
 
-}
+}  // namespace Mantra

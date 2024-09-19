@@ -5,16 +5,11 @@
 class Sandbox : public Mantra::Application
 {
 public:
-	Sandbox() {
+    Sandbox() {}
 
-	}
-
-	~Sandbox() {
-
-	}
-
+    ~Sandbox() {}
 };
 
 Mantra::Application* Mantra::CreateApplication() {
-	return new Sandbox();
+    return new Sandbox();
 }
