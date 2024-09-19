@@ -1,23 +1,31 @@
 project(MantraEngine)
 
-set(Header_Files
+set(HEADER_FILES
     "MantraEngine.h"
     "src/Application.h"
     "src/Core.h"
     "src/EntryPoint.h"
-)
-source_group("Header Files" FILES ${Header_Files})
 
-set(Source_Files
+    "src/Events/Event.h"
+    "src/Events/KeyEvent.h"
+    "src/Events/MouseEvent.h"
+    "src/Events/ApplicationEvent.h"
+)
+
+set(PCH_FILES
+    "ME_PCH.h")
+
+set(SRC_FILES
     "src/Application.cpp"
 )
-source_group("Source Files" FILES ${Source_Files})
 
 set(ALL_FILES
-    ${Header_Files}
-    ${Source_Files}
+    ${HEADER_FILES}
+    ${SRC_FILES}
 )
+
 
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ME_PLATFORM_WINDOWS ME_BUILD_DLL)
