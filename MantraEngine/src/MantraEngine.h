@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Mantra/Application.h"
 #include "Mantra/EntryPoint.h"
 

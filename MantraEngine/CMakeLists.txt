@@ -11,7 +11,7 @@ set(HEADER_FILES
     "src/Mantra/Events/MouseEvent.h"
     "src/Mantra/Events/ApplicationEvent.h"
 
-    # "src/Mantra/Log/Log.h"
+    "src/Mantra/Log/Log.h"
 )
 
 set(PCH_FILES
@@ -19,7 +19,7 @@ set(PCH_FILES
 
 set(SRC_FILES
     "src/Mantra/Application.cpp"
-    # "src/Mantra/Log/Log.cpp"
+    "src/Mantra/Log/Log.cpp"
 )
 
 set(ALL_FILES
@@ -29,8 +29,8 @@ set(ALL_FILES
 
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC ME_PLATFORM_WINDOWS ME_BUILD_DLL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL)

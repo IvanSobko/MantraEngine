@@ -1,35 +1,40 @@
-// #include "Core.h"
+#pragma once
 
-// #include "spdlog/fmt/ostr.h"
-// #include "spdlog/spdlog.h"
+#include "Mantra/Core.h"
+
+#define SPDLOG_HEADER_ONLY
+#include "spdlog/fmt/ostr.h"
+#include "spdlog/spdlog.h"
 
 namespace Mantra {
 
-// class Mantra_API Log
-// {
-// public:
-//     static void Init();
+class MANTRA_API Log
+{
+public:
+    static void Init();
 
-//     inline static std::shared_ptr<spdlog::logger>& GetEngineLogger() { return mEngineLogger; }
-//     inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return mClientLogger; }
+    static std::shared_ptr<spdlog::logger>& GetEngineLogger();
+    static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
-// private:
-//     static std::shared_ptr<spdlog::logger> mEngineLogger;
-//     static std::shared_ptr<spdlog::logger> mClientLogger;
-// };
+private:
+    // NOTE: to solve warning, spdlog must be compiled and linked as a library, not header-only include.
+    // TODO: change spdlog linkage
+    static std::shared_ptr<spdlog::logger> mEngineLogger;
+    static std::shared_ptr<spdlog::logger> mClientLogger;
+};
 
 }  // namespace Mantra
 
-// // Core log macros
-// #define HZ_CORE_TRACE(...) ::Hazel::Log::GetEngineLogger()->trace(__VA_ARGS__)
-// #define HZ_CORE_INFO(...)  ::Hazel::Log::GetEngineLogger()->info(__VA_ARGS__)
-// #define HZ_CORE_WARN(...)  ::Hazel::Log::GetEngineLogger()->warn(__VA_ARGS__)
-// #define HZ_CORE_ERROR(...) ::Hazel::Log::GetEngineLogger()->error(__VA_ARGS__)
-// #define HZ_CORE_FATAL(...) ::Hazel::Log::GetEngineLogger()->fatal(__VA_ARGS__)
+// Engine log macros
+#define ME_CORE_TRACE(...) ::Mantra::Log::GetEngineLogger()->trace(__VA_ARGS__)
+#define ME_CORE_INFO(...)  ::Mantra::Log::GetEngineLogger()->info(__VA_ARGS__)
+#define ME_CORE_WARN(...)  ::Mantra::Log::GetEngineLogger()->warn(__VA_ARGS__)
+#define ME_CORE_ERROR(...) ::Mantra::Log::GetEngineLogger()->error(__VA_ARGS__)
+#define ME_CORE_FATAL(...) ::Mantra::Log::GetEngineLogger()->fatal(__VA_ARGS__)
 
-// // Client log macros
-// #define HZ_TRACE(...) ::Hazel::Log::GetClientLogger()->trace(__VA_ARGS__)
-// #define HZ_INFO(...)  ::Hazel::Log::GetClientLogger()->info(__VA_ARGS__)
-// #define HZ_WARN(...)  ::Hazel::Log::GetClientLogger()->warn(__VA_ARGS__)
-// #define HZ_ERROR(...) ::Hazel::Log::GetClientLogger()->error(__VA_ARGS__)
-// #define HZ_FATAL(...) ::Hazel::Log::GetClientLogger()->fatal(__VA_ARGS__)
+// Client log macros
+#define ME_TRACE(...) ::Mantra::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define ME_INFO(...)  ::Mantra::Log::GetClientLogger()->info(__VA_ARGS__)
+#define ME_WARN(...)  ::Mantra::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define ME_ERROR(...) ::Mantra::Log::GetClientLogger()->error(__VA_ARGS__)
+#define ME_FATAL(...) ::Mantra::Log::GetClientLogger()->fatal(__VA_ARGS__)
