@@ -1,3 +1,3 @@
 [submodule "MantraEngine/libs/spdlog"]
 	path = MantraEngine/libs/spdlog
-	url = https://github.com/gabime/spdlog.git
+	url = https://github.com/gabime/spdlog
