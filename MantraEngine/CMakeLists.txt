@@ -12,6 +12,9 @@ set(HEADER_FILES
     "src/Mantra/Events/ApplicationEvent.h"
 
     "src/Mantra/Log/Log.h"
+
+    "src/Mantra/Window/Window.h"
+    "src/Mantra/Window/WindowsWindow.h"
 )
 
 set(PCH_FILES
@@ -19,7 +22,10 @@ set(PCH_FILES
 
 set(SRC_FILES
     "src/Mantra/Application.cpp"
+
     "src/Mantra/Log/Log.cpp"
+
+    "src/Mantra/Window/WindowsWindow.cpp"
 )
 
 set(ALL_FILES
@@ -27,7 +33,17 @@ set(ALL_FILES
     ${SRC_FILES}
 )
 
+# ===== OPENGL & GLFW =====
+find_package( OpenGL REQUIRED )
+include_directories( ${OPENGL_INCLUDE_DIRS} )
+
+add_subdirectory(libs/glfw)
+
+# =========================
+
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
+
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)

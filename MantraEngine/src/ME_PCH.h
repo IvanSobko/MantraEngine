@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Mantra/Log/Log.h"
+
 #ifdef ME_PLATFORM_WINDOWS
     #include <Windows.h>
 #endif
