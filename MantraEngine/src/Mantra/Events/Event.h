@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ME_PCH.h"
 #include "Mantra/Core.h"
 
 namespace Mantra {
@@ -11,6 +12,9 @@ namespace Mantra {
 
 class MANTRA_API Event
 {
+    friend class EventDispatcher;
+
+public:
     enum class EventType {
         None = 0,
         WindowClose,
@@ -38,9 +42,6 @@ class MANTRA_API Event
         MouseButton = BIT(4)
     };
 
-    friend class EventDispatcher;
-
-public:
     virtual EventType GetEventType() const = 0;
     virtual const char* GetName() const = 0;
     virtual int GetCategoryFlags() const = 0;

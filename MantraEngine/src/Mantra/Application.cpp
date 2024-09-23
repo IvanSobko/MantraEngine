@@ -9,9 +9,12 @@ namespace Mantra {
 
 Application::Application() {
     mWindow = std::unique_ptr<Window>(Window::Create());
+    mWindow->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 }
 
-Application::~Application() {}
+Application::~Application() {
+    // glfwTerminate();
+}
 
 void Application::Run() {
     while (mRunning) {
@@ -19,5 +22,15 @@ void Application::Run() {
         glClear(GL_COLOR_BUFFER_BIT);
         mWindow->OnUpdate();
     }
+}
+void Application::OnEvent(Event& e) {
+    EventDispatcher dispatcher(e);
+    dispatcher.Dispatch<WindowCloseEvent>(
+        std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+}
+bool Application::OnWindowClose(WindowCloseEvent& e) {
+    mRunning = false;
+    //TODO: cleanup glfw context
+    return true;
 }
 }  // namespace Mantra
