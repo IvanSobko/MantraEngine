@@ -52,7 +52,6 @@ void WindowsWindow::Init(const WindowProps& props) {
     SetVSync(true);
 
     glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        ME_CORE_INFO("Key Pressed {0}", key);
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         switch (action) {
             case GLFW_PRESS:
@@ -68,7 +67,6 @@ void WindowsWindow::Init(const WindowProps& props) {
     });
 
     glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
-        ME_CORE_INFO("Mouse button pressed {0}:{1}", button, action);
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         switch (action) {
             case GLFW_PRESS:
@@ -81,21 +79,18 @@ void WindowsWindow::Init(const WindowProps& props) {
     });
 
     glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double xpos, double ypos) {
-        ME_CORE_INFO("Mouse moved to {0}:{1}", xpos, ypos);
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         data.eventCallback(MouseMovedEvent((float)xpos, (float)ypos));
     });
 
     glfwSetScrollCallback(mWindow, [](GLFWwindow* window, double xoffset, double yoffset) {
-        ME_CORE_INFO("Mouse scrolled to {0}:{1}", xoffset, yoffset);
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
         data.eventCallback(MouseScrolledEvent((float)xoffset, (float)yoffset));
     });
 
     glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {
-        ME_CORE_INFO("Window close request");
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         data.eventCallback(WindowCloseEvent());
     });

@@ -2,6 +2,7 @@
 
 #include "ME_PCH.h"
 #include "Mantra/Core.h"
+#include "spdlog/fmt/ostr.h"
 
 namespace Mantra {
 
@@ -74,7 +75,10 @@ private:
     Event& mEvent;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const Event& e) {
+}  // namespace Mantra
+
+inline std::ostream& operator<<(std::ostream& os, const Mantra::Event& e) {
     return os << e.ToString();
 }
-}  // namespace Mantra
+template <>
+struct fmt::formatter<Mantra::Event> : fmt::ostream_formatter {};
