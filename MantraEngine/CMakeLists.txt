@@ -33,17 +33,29 @@ set(ALL_FILES
     ${SRC_FILES}
 )
 
-# ===== OPENGL & GLFW =====
+# ===== OPENGL & GLFW & GLAD =====
 find_package( OpenGL REQUIRED )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
 add_subdirectory(libs/glfw)
 
+add_subdirectory(libs/glad)
+
 # =========================
+
+if(MSVC)
+    message("Adding MT-DLL options.")
+    add_compile_options(
+        $<$<CONFIG:>:/MD>
+        $<$<CONFIG:Debug>:/MDd> 
+        $<$<CONFIG:Release>:/MD>
+    )
+endif()
+
 
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
-target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)

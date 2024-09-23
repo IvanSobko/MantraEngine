@@ -1,9 +1,9 @@
 #include "Application.h"
-#include <stdio.h>
 
-#include "ME_PCH.h"
+#include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
+#include "ME_PCH.h"
 
 namespace Mantra {
 
