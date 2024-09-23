@@ -37,11 +37,16 @@ set(ALL_FILES
 find_package( OpenGL REQUIRED )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
-add_subdirectory(libs/glfw)
+add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glfw)
+add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glad)
 
-add_subdirectory(libs/glad)
+# ================================
 
-# =========================
+# ========== spdlog ==============
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/spdlog)
+# ================================
 
 if(MSVC)
     message("Adding MT-DLL options.")
@@ -55,7 +60,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
-target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad)
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)

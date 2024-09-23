@@ -2,7 +2,6 @@
 
 #include "Mantra/Core.h"
 
-#define SPDLOG_HEADER_ONLY
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/spdlog.h"
 
@@ -31,8 +30,6 @@ public:
     static std::shared_ptr<spdlog::logger>& GetClientLogger();
 
 private:
-    // NOTE: to solve warning, spdlog must be compiled and linked as a library, not header-only include.
-    // TODO: change spdlog linkage
     static std::shared_ptr<spdlog::logger> mEngineLogger;
     static std::shared_ptr<spdlog::logger> mClientLogger;
 };
