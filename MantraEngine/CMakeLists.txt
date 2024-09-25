@@ -37,15 +37,26 @@ set(ALL_FILES
 find_package( OpenGL REQUIRED )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
+option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glfw)
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glad)
-
-# ================================
 
 # ========== spdlog ==============
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/spdlog)
+
+# ========== imgui ==============
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/imgui)
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+file(GLOB IMGUI_FILES ${IMGUI_DIR}/*.cpp ${IMGUI_DIR}/*.h)
+
+set(ALL_FILES ${ALL_FILES} ${IMGUI_FILES})
 # ================================
 
 if(MSVC)
