@@ -2,6 +2,7 @@
 
 #include "Window.h"
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Mantra {
@@ -26,8 +27,7 @@ private:
     virtual void Init(const WindowProps& props);
     virtual void Shutdown();
 
-private:
-    GLFWwindow* mWindow;
+    GLFWwindow* mWindow = nullptr;
 
     struct WindowData {
         std::string title;

@@ -5,6 +5,8 @@
 #include "Mantra/Events/KeyEvent.h"
 #include "Mantra/Events/MouseEvent.h"
 
+#include <glad/glad.h>
+
 namespace Mantra {
 
 static bool GLFWInitialized = false;
@@ -48,6 +50,10 @@ void WindowsWindow::Init(const WindowProps& props) {
     }
 
     glfwMakeContextCurrent(mWindow);
+
+    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    ME_CORE_ASSERT(status, "Failed to initialize Glad!");
+
     glfwSetWindowUserPointer(mWindow, &mData);
     SetVSync(true);
 
@@ -114,10 +120,11 @@ void WindowsWindow::OnUpdate() {
 }
 
 void WindowsWindow::SetVSync(bool enabled) {
-    if (enabled)
+    if (enabled) {
         glfwSwapInterval(1);
-    else
+    } else {
         glfwSwapInterval(0);
+    }
 
     mData.vSync = enabled;
 }
