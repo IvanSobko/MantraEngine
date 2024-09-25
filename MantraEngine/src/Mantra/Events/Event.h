@@ -50,8 +50,7 @@ public:
 
     inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
 
-protected:
-    bool mHandled = false;
+    bool handled = false;
 };
 
 class EventDispatcher
@@ -65,7 +64,7 @@ public:
     template <typename T>
     bool Dispatch(EventFn<T> func) {
         if (mEvent.GetEventType() == T::GetStaticType()) {
-            mEvent.mHandled = func(*(T*)&mEvent);
+            mEvent.handled = func(*(T*)&mEvent);
             return true;
         }
         return false;

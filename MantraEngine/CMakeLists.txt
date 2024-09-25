@@ -15,6 +15,9 @@ set(HEADER_FILES
 
     "src/Mantra/Window/Window.h"
     "src/Mantra/Window/WindowsWindow.h"
+
+    "src/Mantra/Layers/Layer.h"
+    "src/Mantra/Layers/Layerstack.h"
 )
 
 set(PCH_FILES
@@ -26,6 +29,8 @@ set(SRC_FILES
     "src/Mantra/Log/Log.cpp"
 
     "src/Mantra/Window/WindowsWindow.cpp"
+
+    "src/Mantra/Layers/Layerstack.cpp"
 )
 
 set(ALL_FILES
