@@ -29,7 +29,6 @@ public:
     virtual unsigned int GetWidth() const = 0;
     virtual unsigned int GetHeight() const = 0;
 
-    virtual bool IsKeyDown(int keycode) const = 0;
     virtual void* GetNativeWindow() const = 0;
 
     // Window attributes

@@ -115,10 +115,6 @@ void GLFWWindow::OnUpdate() {
     glfwSwapBuffers(mWindow);
 }
 
-bool GLFWWindow::IsKeyDown(int keycode) const {
-    return glfwGetKey(mWindow, keycode) == GLFW_PRESS;
-}
-
 void* GLFWWindow::GetNativeWindow() const {
     return mWindow;
 }

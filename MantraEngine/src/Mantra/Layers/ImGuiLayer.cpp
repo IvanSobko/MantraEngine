@@ -1,6 +1,7 @@
 #include "ImGuiLayer.h"
 
 #include "Mantra/Application.h"
+#include "Mantra/Input/Input.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -136,11 +137,13 @@ ImGuiKey GLFWKeytoImGUIKey(int keycode) {
 
 void UpdateKeyMods() {
     ImGuiIO& io = ImGui::GetIO();
-    Window& window = Application::Get().GetWindow();
-    io.AddKeyEvent(ImGuiMod_Ctrl, window.IsKeyDown(GLFW_KEY_LEFT_CONTROL) || window.IsKeyDown(GLFW_KEY_RIGHT_CONTROL));
-    io.AddKeyEvent(ImGuiMod_Shift, window.IsKeyDown(GLFW_KEY_LEFT_SHIFT) || window.IsKeyDown(GLFW_KEY_RIGHT_SHIFT));
-    io.AddKeyEvent(ImGuiMod_Alt, window.IsKeyDown(GLFW_KEY_LEFT_ALT) || window.IsKeyDown(GLFW_KEY_RIGHT_ALT));
-    io.AddKeyEvent(ImGuiMod_Super, window.IsKeyDown(GLFW_KEY_LEFT_SUPER) || window.IsKeyDown(GLFW_KEY_RIGHT_SUPER));
+    io.AddKeyEvent(ImGuiMod_Ctrl,
+                   Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL) || Input::IsKeyPressed(GLFW_KEY_RIGHT_CONTROL));
+    io.AddKeyEvent(ImGuiMod_Shift,
+                   Input::IsKeyPressed(GLFW_KEY_LEFT_SHIFT) || Input::IsKeyPressed(GLFW_KEY_RIGHT_SHIFT));
+    io.AddKeyEvent(ImGuiMod_Alt, Input::IsKeyPressed(GLFW_KEY_LEFT_ALT) || Input::IsKeyPressed(GLFW_KEY_RIGHT_ALT));
+    io.AddKeyEvent(ImGuiMod_Super,
+                   Input::IsKeyPressed(GLFW_KEY_LEFT_SUPER) || Input::IsKeyPressed(GLFW_KEY_RIGHT_SUPER));
 }
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}

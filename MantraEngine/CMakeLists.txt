@@ -19,6 +19,9 @@ set(HEADER_FILES
     "src/Mantra/Layers/Layer.h"
     "src/Mantra/Layers/Layerstack.h"
     "src/Mantra/Layers/ImGuiLayer.h"
+
+    "src/Mantra/Input/Input.h"
+    "src/Mantra/Input/GLFWInput.h"
 )
 
 set(PCH_FILES
@@ -33,6 +36,8 @@ set(SRC_FILES
 
     "src/Mantra/Layers/Layerstack.cpp"
     "src/Mantra/Layers/ImGuiLayer.cpp"
+
+    "src/Mantra/Input/GLFWInput.cpp"
 )
 
 set(ALL_FILES

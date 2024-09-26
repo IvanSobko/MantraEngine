@@ -17,7 +17,6 @@ public:
     inline unsigned int GetWidth() const override { return mData.width; }
     inline unsigned int GetHeight() const override { return mData.height; }
 
-    bool IsKeyDown(int keycode) const override;
     void* GetNativeWindow() const override;
 
     // Window attributes
