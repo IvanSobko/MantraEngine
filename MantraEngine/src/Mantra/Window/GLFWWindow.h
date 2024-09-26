@@ -6,11 +6,11 @@
 
 namespace Mantra {
 
-class WindowsWindow : public Window
+class GLFWWindow : public Window
 {
 public:
-    WindowsWindow(const WindowProps& props);
-    virtual ~WindowsWindow();
+    GLFWWindow(const WindowProps& props);
+    virtual ~GLFWWindow();
 
     void OnUpdate() override;
 
@@ -18,6 +18,7 @@ public:
     inline unsigned int GetHeight() const override { return mData.height; }
 
     bool IsKeyDown(int keycode) const override;
+    void* GetNativeWindow() const override;
 
     // Window attributes
     inline void SetEventCallback(const EventCallbackFn& callback) override { mData.eventCallback = callback; }

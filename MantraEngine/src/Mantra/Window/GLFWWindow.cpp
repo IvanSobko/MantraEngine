@@ -1,4 +1,4 @@
-#include "WindowsWindow.h"
+#include "GLFWWindow.h"
 #include "ME_PCH.h"
 
 #include "Mantra/Events/ApplicationEvent.h"
@@ -12,18 +12,18 @@ namespace Mantra {
 static bool GLFWInitialized = false;
 
 Window* Window::Create(const WindowProps& props) {
-    return new WindowsWindow(props);
+    return new GLFWWindow(props);
 }
 
-WindowsWindow::WindowsWindow(const WindowProps& props) {
+GLFWWindow::GLFWWindow(const WindowProps& props) {
     Init(props);
 }
 
-WindowsWindow::~WindowsWindow() {
+GLFWWindow::~GLFWWindow() {
     Shutdown();
 }
 
-void WindowsWindow::Init(const WindowProps& props) {
+void GLFWWindow::Init(const WindowProps& props) {
     mData.title = props.title;
     mData.width = props.width;
     mData.height = props.height;
@@ -106,20 +106,24 @@ void WindowsWindow::Init(const WindowProps& props) {
     });
 }
 
-void WindowsWindow::Shutdown() {
+void GLFWWindow::Shutdown() {
     glfwDestroyWindow(mWindow);
 }
 
-void WindowsWindow::OnUpdate() {
+void GLFWWindow::OnUpdate() {
     glfwPollEvents();
     glfwSwapBuffers(mWindow);
 }
 
-bool WindowsWindow::IsKeyDown(int keycode) const {
+bool GLFWWindow::IsKeyDown(int keycode) const {
     return glfwGetKey(mWindow, keycode) == GLFW_PRESS;
 }
 
-void WindowsWindow::SetVSync(bool enabled) {
+void* GLFWWindow::GetNativeWindow() const {
+    return mWindow;
+}
+
+void GLFWWindow::SetVSync(bool enabled) {
     if (enabled) {
         glfwSwapInterval(1);
     } else {
@@ -129,7 +133,7 @@ void WindowsWindow::SetVSync(bool enabled) {
     mData.vSync = enabled;
 }
 
-bool WindowsWindow::IsVSync() const {
+bool GLFWWindow::IsVSync() const {
     return mData.vSync;
 }
 

@@ -14,7 +14,7 @@ set(HEADER_FILES
     "src/Mantra/Log/Log.h"
 
     "src/Mantra/Window/Window.h"
-    "src/Mantra/Window/WindowsWindow.h"
+    "src/Mantra/Window/GLFWWindow.h"
 
     "src/Mantra/Layers/Layer.h"
     "src/Mantra/Layers/Layerstack.h"
@@ -29,7 +29,7 @@ set(SRC_FILES
 
     "src/Mantra/Log/Log.cpp"
 
-    "src/Mantra/Window/WindowsWindow.cpp"
+    "src/Mantra/Window/GLFWWindow.cpp"
 
     "src/Mantra/Layers/Layerstack.cpp"
     "src/Mantra/Layers/ImGuiLayer.cpp"

@@ -12,8 +12,7 @@ struct WindowProps {
     unsigned int width;
     unsigned int height;
 
-    WindowProps(const std::string& title = "Mantra Engine", unsigned int width = 1280,
-                unsigned int height = 720)
+    WindowProps(const std::string& title = "Mantra Engine", unsigned int width = 1280, unsigned int height = 720)
         : title(title), width(width), height(height) {}
 };
 
@@ -31,6 +30,7 @@ public:
     virtual unsigned int GetHeight() const = 0;
 
     virtual bool IsKeyDown(int keycode) const = 0;
+    virtual void* GetNativeWindow() const = 0;
 
     // Window attributes
     virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
