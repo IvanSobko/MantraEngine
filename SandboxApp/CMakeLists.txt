@@ -1,12 +1,11 @@
 project(Sandbox)
 
-set(Source_Files
+set(SRC_FILES
     "src/SandboxApp.cpp"
 )
-source_group("Source Files" FILES ${Source_Files})
 
 set(ALL_FILES
-    ${Source_Files}
+    ${SRC_FILES}
 )
 
 add_executable(${PROJECT_NAME} ${ALL_FILES})
