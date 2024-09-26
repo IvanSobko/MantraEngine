@@ -37,8 +37,6 @@ void Application::Run() {
     }
 }
 void Application::OnEvent(Event& e) {
-    ME_CORE_TRACE("{0}", e);
-
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(
         std::bind(&Application::OnWindowClose, this, std::placeholders::_1));

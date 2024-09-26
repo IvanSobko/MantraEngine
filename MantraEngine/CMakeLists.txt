@@ -18,6 +18,7 @@ set(HEADER_FILES
 
     "src/Mantra/Layers/Layer.h"
     "src/Mantra/Layers/Layerstack.h"
+    "src/Mantra/Layers/ImGuiLayer.h"
 )
 
 set(PCH_FILES
@@ -31,6 +32,7 @@ set(SRC_FILES
     "src/Mantra/Window/WindowsWindow.cpp"
 
     "src/Mantra/Layers/Layerstack.cpp"
+    "src/Mantra/Layers/ImGuiLayer.cpp"
 )
 
 set(ALL_FILES
@@ -60,6 +62,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/spdlog)
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/imgui)
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 file(GLOB IMGUI_FILES ${IMGUI_DIR}/*.cpp ${IMGUI_DIR}/*.h)
+set(IMGUI_FILES ${IMGUI_FILES}  ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp  ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp)
+
 
 set(ALL_FILES ${ALL_FILES} ${IMGUI_FILES})
 # ================================
@@ -82,4 +86,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spd
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE)

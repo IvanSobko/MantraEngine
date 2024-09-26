@@ -19,7 +19,7 @@ protected:
 class MANTRA_API KeyPressedEvent : public KeyEvent
 {
 public:
-    KeyPressedEvent(int keycode, int repeatCount) : KeyEvent(keycode), mRepeatCount(repeatCount) {}
+    KeyPressedEvent(int keycode, int repeatCount = 0) : KeyEvent(keycode), mRepeatCount(repeatCount) {}
 
     inline int GetRepeatCount() const { return mRepeatCount; }
 
@@ -32,6 +32,25 @@ public:
     static EventType GetStaticType() { return EventType::KeyPressed; }
     virtual EventType GetEventType() const override { return GetStaticType(); }
     virtual const char* GetName() const override { return "KeyPressed"; }
+
+private:
+    int mRepeatCount;
+};
+
+class MANTRA_API KeyTypedEvent : public KeyEvent
+{
+public:
+    KeyTypedEvent(int keycode) : KeyEvent(keycode) {}
+
+    std::string ToString() const override {
+        std::stringstream ss;
+        ss << "KeyTypedEvent: " << mKeyCode;
+        return ss.str();
+    }
+
+    static EventType GetStaticType() { return EventType::KeyTyped; }
+    virtual EventType GetEventType() const override { return GetStaticType(); }
+    virtual const char* GetName() const override { return "KeyTypedEvent"; }
 
 private:
     int mRepeatCount;

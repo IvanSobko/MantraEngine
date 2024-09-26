@@ -27,6 +27,7 @@ public:
         AppUpdate,
         AppRender,
         KeyPressed,
+        KeyTyped,
         KeyReleased,
         MouseButtonPressed,
         MouseButtonReleased,

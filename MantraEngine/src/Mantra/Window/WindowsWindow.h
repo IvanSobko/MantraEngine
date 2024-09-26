@@ -2,7 +2,6 @@
 
 #include "Window.h"
 
-#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Mantra {
@@ -17,6 +16,8 @@ public:
 
     inline unsigned int GetWidth() const override { return mData.width; }
     inline unsigned int GetHeight() const override { return mData.height; }
+
+    bool IsKeyDown(int keycode) const override;
 
     // Window attributes
     inline void SetEventCallback(const EventCallbackFn& callback) override { mData.eventCallback = callback; }

@@ -60,27 +60,23 @@ void WindowsWindow::Init(const WindowProps& props) {
     glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         switch (action) {
-            case GLFW_PRESS:
-                data.eventCallback(KeyPressedEvent(key, 0));
-                break;
-            case GLFW_RELEASE:
-                data.eventCallback(KeyReleasedEvent(key));
-                break;
-            case GLFW_REPEAT:
-                data.eventCallback(KeyPressedEvent(key, 1));
-                break;
+            case GLFW_PRESS: data.eventCallback(KeyPressedEvent(key)); break;
+            case GLFW_RELEASE: data.eventCallback(KeyReleasedEvent(key)); break;
+            case GLFW_REPEAT: data.eventCallback(KeyPressedEvent(key, 1)); break;
         }
+    });
+
+    glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int keycode) {
+        WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+        KeyTypedEvent event(keycode);
+        data.eventCallback(event);
     });
 
     glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
         WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
         switch (action) {
-            case GLFW_PRESS:
-                data.eventCallback(MouseButtonPressedEvent(button));
-                break;
-            case GLFW_RELEASE:
-                data.eventCallback(MouseButtonReleasedEvent(button));
-                break;
+            case GLFW_PRESS: data.eventCallback(MouseButtonPressedEvent(button)); break;
+            case GLFW_RELEASE: data.eventCallback(MouseButtonReleasedEvent(button)); break;
         }
     });
 
@@ -117,6 +113,10 @@ void WindowsWindow::Shutdown() {
 void WindowsWindow::OnUpdate() {
     glfwPollEvents();
     glfwSwapBuffers(mWindow);
+}
+
+bool WindowsWindow::IsKeyDown(int keycode) const {
+    return glfwGetKey(mWindow, keycode) == GLFW_PRESS;
 }
 
 void WindowsWindow::SetVSync(bool enabled) {

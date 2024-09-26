@@ -7,15 +7,18 @@ class ExampleLayer : public Mantra::Layer
 public:
     ExampleLayer() : Layer("Example") {}
 
-    void OnUpdate() override { ME_INFO("ExampleLayer::Update"); }
+    void OnUpdate() override {}
 
-    void OnEvent(Mantra::Event& event) override { ME_TRACE("{0}", event); }
+    void OnEvent(Mantra::Event& event) override {}
 };
 
 class Sandbox : public Mantra::Application
 {
 public:
-    Sandbox() { PushLayer(new ExampleLayer()); }
+    Sandbox() {
+        PushLayer(new ExampleLayer());
+        PushOverlay(new Mantra::ImGuiLayer());
+    }
 
     ~Sandbox() {}
 };
