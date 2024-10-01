@@ -4,6 +4,8 @@
 
 namespace Mantra {
 
+//TODO: add own key code and conversion between plaforms Win32, GLFW, etc..
+
 class GLFWInput : public Input
 {
 protected:

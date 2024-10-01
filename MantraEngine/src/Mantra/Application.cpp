@@ -38,8 +38,7 @@ void Application::Run() {
 }
 void Application::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<WindowCloseEvent>(
-        std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
 
     for (auto it = mLayerstack.end(); it != mLayerstack.begin();) {
         (*--it)->OnEvent(e);

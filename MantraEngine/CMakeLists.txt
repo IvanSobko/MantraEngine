@@ -45,7 +45,7 @@ set(ALL_FILES
     ${SRC_FILES}
 )
 
-# ===== OPENGL & GLFW & GLAD =====
+# ===== OPENGL & GLFW & GLAD & GLM =====
 find_package( OpenGL REQUIRED )
 include_directories( ${OPENGL_INCLUDE_DIRS} )
 
@@ -57,6 +57,7 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glfw)
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glad)
+add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glm)
 
 # ========== spdlog ==============
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
@@ -85,7 +86,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
-target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog)
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog glm::glm)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)

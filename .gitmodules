@@ -7,3 +7,6 @@
 [submodule "MantraEngine/libs/imgui"]
 	path = MantraEngine/libs/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "MantraEngine/libs/glm"]
+	path = MantraEngine/libs/glm
+	url = https://github.com/g-truc/glm
