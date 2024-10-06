@@ -15,10 +15,7 @@ public:
 class Sandbox : public Mantra::Application
 {
 public:
-    Sandbox() {
-        PushLayer(new ExampleLayer());
-        PushOverlay(new Mantra::ImGuiLayer());
-    }
+    Sandbox() { PushLayer(new ExampleLayer()); }
 
     ~Sandbox() {}
 };

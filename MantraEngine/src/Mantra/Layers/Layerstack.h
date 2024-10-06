@@ -23,7 +23,7 @@ public:
 
 private:
     std::vector<Layer*> mLayers;
-    std::vector<Layer*>::iterator mLayerInsert;
+    unsigned int mLayerInsertIndex = 0;
 };
 
 }  // namespace Mantra

@@ -2,9 +2,7 @@
 
 namespace Mantra {
 
-Layerstack::Layerstack() {
-    mLayerInsert = mLayers.begin();
-}
+Layerstack::Layerstack() {}
 
 Layerstack::~Layerstack() {
     for (Layer* layer : mLayers) {
@@ -13,7 +11,8 @@ Layerstack::~Layerstack() {
 }
 
 void Layerstack::PushLayer(Layer* layer) {
-    mLayerInsert = mLayers.emplace(mLayerInsert, layer);
+    mLayers.emplace(mLayers.begin() + mLayerInsertIndex, layer);
+    mLayerInsertIndex++;
 }
 
 void Layerstack::PushOverlay(Layer* overlay) {
@@ -24,7 +23,7 @@ void Layerstack::PopLayer(Layer* layer) {
     auto it = std::find(mLayers.begin(), mLayers.end(), layer);
     if (it != mLayers.end()) {
         mLayers.erase(it);
-        mLayerInsert--;
+        mLayerInsertIndex--;
     }
 }
 

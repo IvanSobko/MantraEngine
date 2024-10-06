@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "Events/ApplicationEvent.h"
 #include "Events/Event.h"
+#include "Layers/ImGuiLayer.h"
 #include "Layers/Layerstack.h"
 #include "Window/Window.h"
 
@@ -32,6 +33,7 @@ private:
     bool mRunning = true;
 
     Layerstack mLayerstack;
+    ImGuiLayer* mImGuiLayer = nullptr;
 
     static Application* sInstance;
 };

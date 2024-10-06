@@ -14,13 +14,12 @@ public:
     ImGuiLayer();
     ~ImGuiLayer();
 
-    void OnAttach();
-    void OnDetach();
-    void OnUpdate();
-    void OnEvent(Event& event);
+    void OnAttach() override;
+    void OnDetach() override;
+    void OnImGuiRender() override;
 
-private:
-    float mTime = 0.0f;
+    void Begin();
+    void End();
 };
 
 }  // namespace Mantra
