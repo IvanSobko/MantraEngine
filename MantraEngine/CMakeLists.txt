@@ -92,4 +92,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spd
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE)
+
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE)
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_BUILD_DLL GLFW_INCLUDE_NONE)
+endif()

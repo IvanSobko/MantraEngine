@@ -14,6 +14,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/../MantraEngine/"
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS)
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS)
+endif()
+
+if(UNIX)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE)
+endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE MantraEngine)

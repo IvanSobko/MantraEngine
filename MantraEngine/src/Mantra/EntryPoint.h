@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <MantraEngine.h>
-#ifdef ME_PLATFORM_WINDOWS
 
 extern Mantra::Application* Mantra::CreateApplication();
 
@@ -13,5 +12,3 @@ int main(int argc, char** argv) {
     app->Run();
     delete app;
 }
-
-#endif

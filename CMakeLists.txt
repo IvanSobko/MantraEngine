@@ -5,7 +5,12 @@ project(Mantra)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4996")
+
+
+if(WIN32)
+    # disable MSVC warning 4251 (DLL interface) and 4996 (deprecated functions)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4996")
+endif()
 
 option(MANTRA_BUILD_SANDBOX "Build sandbox application" ON)
 
