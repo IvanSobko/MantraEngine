@@ -9,6 +9,7 @@
 
 #include "Renderer/Buffer.h"
 #include "Renderer/Shader.h"
+#include "Renderer/VertexArray.h"
 
 namespace Mantra {
 
@@ -38,11 +39,11 @@ private:
     Layerstack mLayerstack;
     ImGuiLayer* mImGuiLayer = nullptr;
 
-    std::unique_ptr<Shader> mShader;
-    std::unique_ptr<VertexBuffer> mVertexBuffer;
-    std::unique_ptr<IndexBuffer> mIndexBuffer;
+    std::shared_ptr<Shader> mTriangleShader;
+    std::shared_ptr<VertexArray> mTriangleVA;
 
-    unsigned int mVertexArray;
+    std::shared_ptr<Shader> mSquareShader;
+    std::shared_ptr<VertexArray> mSquareVA;
 
     static Application* sInstance;
 };
