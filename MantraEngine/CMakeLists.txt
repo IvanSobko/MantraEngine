@@ -22,6 +22,16 @@ set(HEADER_FILES
 
     "src/Mantra/Input/Input.h"
     "src/Mantra/Input/GLFWInput.h"
+
+    "src/Mantra/Renderer/GraphicsContext.h"
+    "src/Mantra/Renderer/Renderer.h"
+    "src/Mantra/Renderer/Buffer.h"
+    "src/Mantra/Renderer/Shader.h"
+    "src/Mantra/Renderer/VertexArray.h"
+
+    "src/Mantra/Renderer/OpenGL/OpenGLContext.h"
+    "src/Mantra/Renderer/OpenGL/OpenGLBuffer.h"
+    "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.h"
 )
 
 set(PCH_FILES
@@ -38,6 +48,15 @@ set(SRC_FILES
     "src/Mantra/Layers/ImGuiLayer.cpp"
 
     "src/Mantra/Input/GLFWInput.cpp"
+
+    "src/Mantra/Renderer/Renderer.cpp"
+    "src/Mantra/Renderer/Buffer.cpp"
+    "src/Mantra/Renderer/Shader.cpp"
+    "src/Mantra/Renderer/VertexArray.cpp"
+
+    "src/Mantra/Renderer/OpenGL/OpenGLContext.cpp"
+    "src/Mantra/Renderer/OpenGL/OpenGLBuffer.cpp"
+    "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.cpp"
 )
 
 set(ALL_FILES
@@ -66,10 +85,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/spdlog)
 
 # ========== imgui ==============
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/imgui)
-include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+
 file(GLOB IMGUI_FILES ${IMGUI_DIR}/*.cpp ${IMGUI_DIR}/*.h)
+
 set(IMGUI_FILES ${IMGUI_FILES}  ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp  ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp)
 
+# Add ImGui include directories as PUBLIC so client apps can include ImGui headers
 
 set(ALL_FILES ${ALL_FILES} ${IMGUI_FILES})
 # ================================
@@ -88,6 +109,7 @@ add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
 
 target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog glm::glm)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 

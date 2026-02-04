@@ -7,6 +7,9 @@
 #include "Layers/Layerstack.h"
 #include "Window/Window.h"
 
+#include "Renderer/Buffer.h"
+#include "Renderer/Shader.h"
+
 namespace Mantra {
 
 class MANTRA_API Application
@@ -34,6 +37,12 @@ private:
 
     Layerstack mLayerstack;
     ImGuiLayer* mImGuiLayer = nullptr;
+
+    std::unique_ptr<Shader> mShader;
+    std::unique_ptr<VertexBuffer> mVertexBuffer;
+    std::unique_ptr<IndexBuffer> mIndexBuffer;
+
+    unsigned int mVertexArray;
 
     static Application* sInstance;
 };

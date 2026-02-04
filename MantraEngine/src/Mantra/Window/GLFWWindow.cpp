@@ -5,7 +5,7 @@
 #include "Mantra/Events/KeyEvent.h"
 #include "Mantra/Events/MouseEvent.h"
 
-#include <glad/glad.h>
+#include "Mantra/Renderer/OpenGL/OpenGLContext.h"
 
 namespace Mantra {
 
@@ -49,10 +49,8 @@ void GLFWWindow::Init(const WindowProps& props) {
         return;
     }
 
-    glfwMakeContextCurrent(mWindow);
-
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    ME_CORE_ASSERT(status, "Failed to initialize Glad!");
+    mContext = new OpenGLContext(mWindow);
+    mContext->Init();
 
     glfwSetWindowUserPointer(mWindow, &mData);
     SetVSync(true);
@@ -135,7 +133,7 @@ void GLFWWindow::Shutdown() {
 
 void GLFWWindow::OnUpdate() {
     glfwPollEvents();
-    glfwSwapBuffers(mWindow);
+    mContext->SwapBuffers();
 }
 
 void* GLFWWindow::GetNativeWindow() const {

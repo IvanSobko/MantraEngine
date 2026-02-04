@@ -4,6 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Mantra/Renderer/GraphicsContext.h"
+
 namespace Mantra {
 
 class GLFWWindow : public Window
@@ -29,6 +31,7 @@ private:
     virtual void Shutdown();
 
     GLFWwindow* mWindow = nullptr;
+    GraphicsContext* mContext = nullptr;
 
     struct WindowData {
         std::string title;

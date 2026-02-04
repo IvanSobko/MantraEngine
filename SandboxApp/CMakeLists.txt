@@ -18,8 +18,8 @@ if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS)
 endif()
 
-if(UNIX)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE)
-endif()
+# if(UNIX)
+#     target_compile_definitions(${PROJECT_NAME} PRIVATE)
+# endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE MantraEngine)

@@ -39,7 +39,7 @@ void ImGuiLayer::OnAttach() {
     Application& app = Application::Get();
     GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
-    // Setup event callback binding
+    // Setup event callback binding, no need to process events manually with Layer::OnEvent()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
 }
@@ -74,8 +74,8 @@ void ImGuiLayer::End() {
 }
 
 void ImGuiLayer::OnImGuiRender() {
-    static bool show = true;
-    ImGui::ShowDemoWindow(&show);
+    // static bool show = false;
+    // ImGui::ShowDemoWindow(&show);
 }
 
 }  // namespace Mantra
