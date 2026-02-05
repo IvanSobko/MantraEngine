@@ -5,3 +5,9 @@
 #include "Mantra/Window/Window.h"
 
 #include "Mantra/Layers/Layer.h"
+
+// Renderer
+#include "Mantra/Renderer/Buffer.h"
+#include "Mantra/Renderer/Renderer.h"
+#include "Mantra/Renderer/Shader.h"
+#include "Mantra/Renderer/VertexArray.h"

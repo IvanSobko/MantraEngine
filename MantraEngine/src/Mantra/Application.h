@@ -38,12 +38,6 @@ private:
     Layerstack mLayerstack;
     ImGuiLayer* mImGuiLayer = nullptr;
 
-    std::shared_ptr<Shader> mTriangleShader;
-    std::shared_ptr<VertexArray> mTriangleVA;
-
-    std::shared_ptr<Shader> mSquareShader;
-    std::shared_ptr<VertexArray> mSquareVA;
-
     static Application* sInstance;
 };
 
