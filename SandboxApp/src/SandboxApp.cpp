@@ -7,6 +7,9 @@ class ExampleLayer : public Mantra::Layer
 {
 public:
     ExampleLayer() : Layer("Example") {
+
+        mCamera = Mantra::OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+
         mTriangleVA.reset(Mantra::VertexArray::Create());
 
         float vertices[3 * 7] = {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -48,6 +51,8 @@ public:
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+            uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
@@ -55,7 +60,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -81,12 +86,14 @@ public:
 			
 			layout(location = 0) in vec3 a_Position;
 
+            uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
 			}
 		)";
 
@@ -110,18 +117,23 @@ public:
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
 
-        Mantra::Renderer::BeginScene();
+        mCamera.SetPosition({0.5f, 0.5f, 0.0f});
+        mCamera.SetRotation(45.0f);
 
-        mSquareShader->Bind();
-        Mantra::Renderer::Submit(mSquareVA);
+        Mantra::Renderer::BeginScene(mCamera);
 
-        mTriangleShader->Bind();
-        Mantra::Renderer::Submit(mTriangleVA);
+        Mantra::Renderer::Submit(mSquareShader, mSquareVA);
+
+        Mantra::Renderer::Submit(mTriangleShader, mTriangleVA);
+
+        Mantra::Renderer::EndScene();
     }
 
     void OnEvent(Mantra::Event& event) override {}
 
 private:
+    Mantra::OrthoCamera mCamera;
+
     std::shared_ptr<Mantra::Shader> mTriangleShader;
     std::shared_ptr<Mantra::VertexArray> mTriangleVA;
 

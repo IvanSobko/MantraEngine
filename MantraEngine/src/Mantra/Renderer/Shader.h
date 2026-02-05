@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <string>
 
 namespace Mantra {
@@ -12,6 +13,8 @@ public:
 
     void Bind() const;
     void Unbind() const;
+
+    void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
 private:
     uint32_t mRendererID;
