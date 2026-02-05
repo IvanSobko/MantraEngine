@@ -1,10 +1,5 @@
 #include "Application.h"
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
-#include "ME_PCH.h"
-
 #include "Mantra/Renderer/Renderer.h"
 
 namespace Mantra {

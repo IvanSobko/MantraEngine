@@ -24,5 +24,7 @@
     #define ME_DEBUGBREAK raise(SIGTRAP)
 #endif
 
+#include "Log/Log.h"
+
 #define ME_ASSERT(x, ...) { if(!(x)) { ME_ERROR("Assertion Failed: {0}", __VA_ARGS__); ME_DEBUGBREAK; } }
 #define ME_CORE_ASSERT(x, ...) { if(!(x)) { ME_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); ME_DEBUGBREAK; } }

@@ -3,8 +3,6 @@
 #include "Layer.h"
 #include "Mantra/Core.h"
 
-#include <vector>
-
 namespace Mantra {
 
 class MANTRA_API Layerstack

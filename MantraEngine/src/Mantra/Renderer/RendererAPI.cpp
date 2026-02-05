@@ -1,5 +1,4 @@
 #include "RendererAPI.h"
-#include "ME_PCH.h"
 
 namespace Mantra {
 

@@ -1,6 +1,5 @@
 
 #include "OpenGLRendererAPI.h"
-#include "ME_PCH.h"
 
 #include <glad/glad.h>
 

@@ -1,5 +1,3 @@
-#include "ME_PCH.h"
-
 #include "OpenGLContext.h"
 
 #include <GLFW/glfw3.h>

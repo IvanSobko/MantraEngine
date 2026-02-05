@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glm/glm.hpp"
-
 #include "RendererAPI.h"
+
+#include "glm/glm.hpp"
 
 namespace Mantra {
 

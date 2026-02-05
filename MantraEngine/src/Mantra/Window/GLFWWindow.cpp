@@ -1,5 +1,4 @@
 #include "GLFWWindow.h"
-#include "ME_PCH.h"
 
 #include "Mantra/Events/ApplicationEvent.h"
 #include "Mantra/Events/KeyEvent.h"
