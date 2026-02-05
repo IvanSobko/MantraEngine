@@ -1,9 +1,11 @@
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-#include <GLFW/glfw3.h>
 #include "ME_PCH.h"
+
+#include "Mantra/Renderer/Renderer.h"
 
 namespace Mantra {
 Application* Application::sInstance = nullptr;
@@ -127,17 +129,16 @@ Application::~Application() {
 void Application::Run() {
     while (mRunning) {
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1);
+        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
+        RenderCommand::Clear();
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        Renderer::BeginScene();
 
         mSquareShader->Bind();
-        mSquareVA->Bind();
-        glDrawElements(GL_TRIANGLES, mSquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::Submit(mSquareVA);
 
         mTriangleShader->Bind();
-        mTriangleVA->Bind();
-        glDrawElements(GL_TRIANGLES, mTriangleVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::Submit(mTriangleVA);
 
         for (Layer* layer : mLayerstack) {
             layer->OnUpdate();

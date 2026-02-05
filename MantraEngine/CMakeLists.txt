@@ -25,6 +25,8 @@ set(HEADER_FILES
 
     "src/Mantra/Renderer/GraphicsContext.h"
     "src/Mantra/Renderer/Renderer.h"
+    "src/Mantra/Renderer/RenderCommand.h"
+    "src/Mantra/Renderer/RendererAPI.h"
     "src/Mantra/Renderer/Buffer.h"
     "src/Mantra/Renderer/Shader.h"
     "src/Mantra/Renderer/VertexArray.h"
@@ -32,6 +34,7 @@ set(HEADER_FILES
     "src/Mantra/Renderer/OpenGL/OpenGLContext.h"
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.h"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.h"
+    "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.h"
 )
 
 set(PCH_FILES
@@ -50,6 +53,8 @@ set(SRC_FILES
     "src/Mantra/Input/GLFWInput.cpp"
 
     "src/Mantra/Renderer/Renderer.cpp"
+    "src/Mantra/Renderer/RenderCommand.cpp"
+    "src/Mantra/Renderer/RendererAPI.cpp"
     "src/Mantra/Renderer/Buffer.cpp"
     "src/Mantra/Renderer/Shader.cpp"
     "src/Mantra/Renderer/VertexArray.cpp"
@@ -57,11 +62,13 @@ set(SRC_FILES
     "src/Mantra/Renderer/OpenGL/OpenGLContext.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.cpp"
+    "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.cpp"
 )
 
 set(ALL_FILES
     ${HEADER_FILES}
     ${SRC_FILES}
+    ${PCH_FILES}
 )
 
 # ===== OPENGL & GLFW & GLAD & GLM =====

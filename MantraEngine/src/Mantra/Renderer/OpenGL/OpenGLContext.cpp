@@ -3,7 +3,6 @@
 #include "OpenGLContext.h"
 
 #include <GLFW/glfw3.h>
-
 #include <glad/glad.h>
 
 namespace Mantra {
@@ -22,9 +21,9 @@ void OpenGLContext::Init() {
     ME_CORE_ASSERT(status, "Failed to initialize Glad!");
 
     ME_CORE_INFO("OpenGL Info:");
-    ME_CORE_INFO("  Vendor: {0}", (const char*)glGetString(GL_VENDOR));
+    ME_CORE_INFO("  Vendor  : {0}", (const char*)glGetString(GL_VENDOR));
     ME_CORE_INFO("  Renderer: {0}", (const char*)glGetString(GL_RENDERER));
-    ME_CORE_INFO("  Version: {0}", (const char*)glGetString(GL_VERSION));
+    ME_CORE_INFO("  Version : {0}", (const char*)glGetString(GL_VERSION));
 }
 
 void OpenGLContext::SwapBuffers() {
