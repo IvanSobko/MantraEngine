@@ -1,7 +1,10 @@
 #pragma once
 
-#include "ME_PCH.h"
+#include <functional>
+#include <sstream>
+
 #include "Mantra/Core.h"
+
 #include "spdlog/fmt/ostr.h"
 
 namespace Mantra {

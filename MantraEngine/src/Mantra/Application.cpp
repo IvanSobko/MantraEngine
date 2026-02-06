@@ -1,9 +1,6 @@
 #include "Application.h"
 
-#include <glad/glad.h>
-
-#include <GLFW/glfw3.h>
-#include "ME_PCH.h"
+#include "Mantra/Renderer/Renderer.h"
 
 namespace Mantra {
 Application* Application::sInstance = nullptr;
@@ -30,9 +27,6 @@ Application::~Application() {
 
 void Application::Run() {
     while (mRunning) {
-        glClearColor(1, 0, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         for (Layer* layer : mLayerstack) {
             layer->OnUpdate();
         }
@@ -46,6 +40,7 @@ void Application::Run() {
         mWindow->OnUpdate();
     }
 }
+
 void Application::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));

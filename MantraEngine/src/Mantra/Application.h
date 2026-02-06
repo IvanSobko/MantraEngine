@@ -7,6 +7,9 @@
 #include "Layers/Layerstack.h"
 #include "Window/Window.h"
 
+#include "Renderer/Shader.h"
+#include "Renderer/VertexArray.h"
+
 namespace Mantra {
 
 class MANTRA_API Application

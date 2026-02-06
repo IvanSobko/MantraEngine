@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ME_PCH.h"
-
 #include "Mantra/Core.h"
 #include "Mantra/Events/Event.h"
 

@@ -2,7 +2,6 @@
 
 #include "Mantra/Core.h"
 
-#include "spdlog/fmt/ostr.h"
 #include "spdlog/spdlog.h"
 
 #define LOG_LOC ::spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}
