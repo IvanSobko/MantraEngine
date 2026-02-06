@@ -3,6 +3,11 @@
 #include <iostream>
 #include "imgui.h"
 
+#include "Mantra/Renderer/OpenGL/OpenGLShader.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 class ExampleLayer : public Mantra::Layer
 {
 public:
@@ -32,8 +37,7 @@ public:
 
         mSquareVA.reset(Mantra::VertexArray::Create());
 
-        float squareVertices[3 * 4] = {-0.75f, -0.75f, 0.0f, 0.75f,  -0.75f, 0.0f,
-                                       0.75f,  0.75f,  0.0f, -0.75f, 0.75f,  0.0f};
+        float squareVertices[3 * 4] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
 
         std::shared_ptr<Mantra::VertexBuffer> squareVB;
         squareVB.reset(Mantra::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -52,6 +56,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -60,7 +65,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -79,7 +84,7 @@ public:
 			}
 		)";
 
-        mTriangleShader.reset(new Mantra::Shader(vertexSrc, fragmentSrc));
+        mTriangleShader.reset(Mantra::Shader::Create(vertexSrc, fragmentSrc));
 
         std::string blueShaderVertexSrc = R"(
 			#version 330 core
@@ -87,13 +92,14 @@ public:
 			layout(location = 0) in vec3 a_Position;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 
@@ -102,37 +108,59 @@ public:
 			
 			layout(location = 0) out vec4 color;
 
+            uniform vec3 u_Color;
+
 			in vec3 v_Position;
 
 			void main()
 			{
-				color = vec4(0.2, 0.3, 0.4, 1.0);
+				color = vec4(u_Color, 1.0);
 			}
 		)";
 
-        mSquareShader.reset(new Mantra::Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+        mSquareShader.reset(Mantra::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mSquareShader)->Bind();
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mSquareShader)->SetUniformFloat3("u_Color", mSquareColor);
+
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
 
-        mCamera.SetPosition({0.5f, 0.5f, 0.0f});
-        mCamera.SetRotation(mCamera.GetRotation() + ts * 20.0f);
+        mCamera.SetPosition({0.0f, 0.0f, 0.0f});
+        float speed = 60.0f;  // degrees per second
+        // mCamera.SetRotation(mCamera.GetRotation() + ts * speed);
+
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
         Mantra::Renderer::BeginScene(mCamera);
 
-        Mantra::Renderer::Submit(mSquareShader, mSquareVA);
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+                glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+                Mantra::Renderer::Submit(mSquareShader, mSquareVA, transform);
+            }
+        }
 
         Mantra::Renderer::Submit(mTriangleShader, mTriangleVA);
 
         Mantra::Renderer::EndScene();
     }
 
+    void OnImGuiRender() override {
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("Square Color", glm::value_ptr(mSquareColor));
+        ImGui::End();
+    }
+
     void OnEvent(Mantra::Event& event) override {}
 
 private:
     Mantra::OrthoCamera mCamera;
+
+    glm::vec3 mSquareColor = {0.2f, 0.3f, 0.4f};
 
     std::shared_ptr<Mantra::Shader> mTriangleShader;
     std::shared_ptr<Mantra::VertexArray> mTriangleVA;

@@ -5,6 +5,7 @@
 #include "OpenGL/OpenGLVertexArray.h"
 
 namespace Mantra {
+
 VertexArray* VertexArray::Create() {
     switch (Renderer::GetAPI()) {
         case RendererAPI::API::None:
@@ -16,4 +17,5 @@ VertexArray* VertexArray::Create() {
     ME_CORE_ASSERT(false, "Unknown RendererAPI!");
     return nullptr;
 }
+
 }  // namespace Mantra

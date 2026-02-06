@@ -33,6 +33,7 @@ set(HEADER_FILES
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.h"
 
+    "src/Mantra/Renderer/OpenGL/OpenGLShader.h"
     "src/Mantra/Renderer/OpenGL/OpenGLContext.h"
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.h"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.h"
@@ -64,6 +65,7 @@ set(SRC_FILES
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.cpp"
 
+    "src/Mantra/Renderer/OpenGL/OpenGLShader.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLContext.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.cpp"

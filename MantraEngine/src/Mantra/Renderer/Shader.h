@@ -8,16 +8,12 @@ namespace Mantra {
 class Shader
 {
 public:
-    Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
-    ~Shader();
+    virtual ~Shader() = default;
 
-    void Bind() const;
-    void Unbind() const;
+    virtual void Bind() const = 0;
+    virtual void Unbind() const = 0;
 
-    void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
-
-private:
-    uint32_t mRendererID;
+    static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
 };
 
 }  // namespace Mantra
