@@ -2,18 +2,19 @@
 
 #include "Mantra/Core.h"
 #include "Mantra/Events/Event.h"
+#include "Mantra/Timestep.h"
 
 namespace Mantra {
 
 class MANTRA_API Layer
 {
 public:
-    Layer(const std::string& name = "Layer") : mDebugName(name) {};
-    ~Layer() {};
+    Layer(const std::string& name = "Layer") : mDebugName(name){};
+    ~Layer(){};
 
     virtual void OnAttach() {};
     virtual void OnDetach() {};
-    virtual void OnUpdate() {};
+    virtual void OnUpdate(Timestep ts) {};
     virtual void OnEvent(Event& event) {};
     virtual void OnImGuiRender() {};
 

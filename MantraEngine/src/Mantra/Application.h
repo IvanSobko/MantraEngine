@@ -5,6 +5,7 @@
 #include "Events/Event.h"
 #include "Layers/ImGuiLayer.h"
 #include "Layers/Layerstack.h"
+#include "Timestep.h"
 #include "Window/Window.h"
 
 #include "Renderer/Shader.h"
@@ -34,6 +35,7 @@ private:
 
     std::unique_ptr<Window> mWindow;
     bool mRunning = true;
+    float mLastFrameTime = 0.0f;
 
     Layerstack mLayerstack;
     ImGuiLayer* mImGuiLayer = nullptr;

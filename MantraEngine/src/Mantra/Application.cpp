@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
+
 #include "Mantra/Renderer/Renderer.h"
 
 namespace Mantra {
@@ -27,8 +29,12 @@ Application::~Application() {
 
 void Application::Run() {
     while (mRunning) {
+        float time = (float)glfwGetTime();
+        Timestep timestep = time - mLastFrameTime;
+        mLastFrameTime = time;
+
         for (Layer* layer : mLayerstack) {
-            layer->OnUpdate();
+            layer->OnUpdate(timestep);
         }
 
         mImGuiLayer->Begin();

@@ -113,12 +113,12 @@ public:
         mSquareShader.reset(new Mantra::Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
     }
 
-    void OnUpdate() override {
+    void OnUpdate(Mantra::Timestep ts) override {
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
 
         mCamera.SetPosition({0.5f, 0.5f, 0.0f});
-        mCamera.SetRotation(45.0f);
+        mCamera.SetRotation(mCamera.GetRotation() + ts * 20.0f);
 
         Mantra::Renderer::BeginScene(mCamera);
 
