@@ -24,6 +24,7 @@
     #define ME_DEBUGBREAK raise(SIGTRAP)
 #endif
 
+// should log be included here?
 #include "Log/Log.h"
 
 #define ME_ASSERT(x, ...) { if(!(x)) { ME_ERROR("Assertion Failed: {0}", __VA_ARGS__); ME_DEBUGBREAK; } }

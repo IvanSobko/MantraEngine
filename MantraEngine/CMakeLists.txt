@@ -30,6 +30,7 @@ set(HEADER_FILES
     "src/Mantra/Renderer/Buffer.h"
     "src/Mantra/Renderer/Shader.h"
     "src/Mantra/Renderer/VertexArray.h"
+    "src/Mantra/Renderer/Texture.h"
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.h"
 
@@ -38,6 +39,7 @@ set(HEADER_FILES
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.h"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.h"
     "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.h"
+    "src/Mantra/Renderer/OpenGL/OpenGLTexture.h"
     
 )
 
@@ -62,6 +64,7 @@ set(SRC_FILES
     "src/Mantra/Renderer/Buffer.cpp"
     "src/Mantra/Renderer/Shader.cpp"
     "src/Mantra/Renderer/VertexArray.cpp"
+    "src/Mantra/Renderer/Texture.cpp"
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.cpp"
 
@@ -70,6 +73,7 @@ set(SRC_FILES
     "src/Mantra/Renderer/OpenGL/OpenGLBuffer.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.cpp"
+    "src/Mantra/Renderer/OpenGL/OpenGLTexture.cpp"
 )
 
 set(ALL_FILES
@@ -107,6 +111,15 @@ set(IMGUI_FILES ${IMGUI_FILES}  ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp  ${
 # Add ImGui include directories as PUBLIC so client apps can include ImGui headers
 
 set(ALL_FILES ${ALL_FILES} ${IMGUI_FILES})
+
+# ========== stb_image ==============
+# add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/stb_image)
+
+set(STB_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/stb_image)
+file(GLOB STB_FILES ${STB_DIR}/*.cpp ${STB_DIR}/*.h)
+
+set(ALL_FILES ${ALL_FILES} ${STB_FILES})
+
 # ================================
 
 if(MSVC)
@@ -126,6 +139,9 @@ target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog glm::g
 target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${STB_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
 

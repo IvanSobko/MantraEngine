@@ -19,6 +19,8 @@ Application::Application() {
     mWindow = std::unique_ptr<Window>(Window::Create());
     mWindow->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
+    Renderer::Init();
+
     mImGuiLayer = new ImGuiLayer();
     PushOverlay(mImGuiLayer);
 }

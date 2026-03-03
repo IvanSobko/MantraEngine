@@ -12,6 +12,7 @@
 #include "Mantra/Renderer/Buffer.h"
 #include "Mantra/Renderer/Renderer.h"
 #include "Mantra/Renderer/Shader.h"
+#include "Mantra/Renderer/Texture.h"
 #include "Mantra/Renderer/VertexArray.h"
 
 #include "Mantra/Renderer/Cameras/OrthoCamera.h"

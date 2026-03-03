@@ -6,6 +6,10 @@ namespace Mantra {
 
 Renderer::SceneData* Renderer::mSceneData = new Renderer::SceneData;
 
+void Renderer::Init() {
+    RenderCommand::Init();
+}
+
 void Renderer::BeginScene(OrthoCamera& camera) {
     mSceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 }

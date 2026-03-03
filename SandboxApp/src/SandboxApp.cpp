@@ -17,6 +17,7 @@ public:
 
         mTriangleVA.reset(Mantra::VertexArray::Create());
 
+        // Vertex format: position (3 floats), color (4 floats)
         float vertices[3 * 7] = {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
 
                                  0.5f,  -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
@@ -37,11 +38,21 @@ public:
 
         mSquareVA.reset(Mantra::VertexArray::Create());
 
-        float squareVertices[3 * 4] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f};
+        // Vertex format: position (3 floats), tex coords (2 floats)
+        float squareVertices[5 * 4] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+
+                                       0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
+
+                                       0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+
+                                       -0.5f, 0.5f,  0.0f, 0.0f, 1.0f};
 
         std::shared_ptr<Mantra::VertexBuffer> squareVB;
         squareVB.reset(Mantra::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-        squareVB->SetLayout({{Mantra::ShaderDataType::Float3, "a_Position"}});
+        squareVB->SetLayout({
+            {Mantra::ShaderDataType::Float3, "a_Position"},
+            {Mantra::ShaderDataType::Float2, "a_TexCoord"},
+        });
         mSquareVA->AddVertexBuffer(squareVB);
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
@@ -119,6 +130,46 @@ public:
 		)";
 
         mSquareShader.reset(Mantra::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
+
+        std::string textureShaderVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
+
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+
+			out vec2 v_TexCoord;
+
+			void main()
+			{
+				v_TexCoord = a_TexCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+			}
+		)";
+
+        std::string textureShaderFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TexCoord;
+			
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				color = texture(u_Texture, v_TexCoord);
+			}
+		)";
+
+        mTextureShader.reset(Mantra::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mTextureShader)->Bind();
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mTextureShader)->SetUniformInt("u_Texture", 0);
+
+        mRGBTexture = Mantra::Texture2D::Create("assets/checkerboard.png");
+        mRGBATexture = Mantra::Texture2D::Create("assets/logo.png");
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
@@ -136,15 +187,24 @@ public:
 
         Mantra::Renderer::BeginScene(mCamera);
 
-        for (int y = 0; y < 5; y++) {
-            for (int x = 0; x < 5; x++) {
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
                 glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                 glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
                 Mantra::Renderer::Submit(mSquareShader, mSquareVA, transform);
             }
         }
 
-        Mantra::Renderer::Submit(mTriangleShader, mTriangleVA);
+        // Mantra::Renderer::Submit(mTriangleShader, mTriangleVA);
+
+        glm::mat4 texTransform = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f));
+
+        mRGBTexture->Bind();
+        Mantra::Renderer::Submit(mTextureShader, mSquareVA, texTransform);
+
+        texTransform = glm::translate(texTransform, {0.0f, 0.0f, 0.1f});
+        mRGBATexture->Bind();
+        Mantra::Renderer::Submit(mTextureShader, mSquareVA, texTransform);
 
         Mantra::Renderer::EndScene();
     }
@@ -167,6 +227,9 @@ private:
 
     std::shared_ptr<Mantra::Shader> mSquareShader;
     std::shared_ptr<Mantra::VertexArray> mSquareVA;
+
+    std::shared_ptr<Mantra::Shader> mTextureShader;
+    std::shared_ptr<Mantra::Texture2D> mRGBTexture, mRGBATexture;
 };
 
 class Sandbox : public Mantra::Application
