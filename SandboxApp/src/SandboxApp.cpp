@@ -11,9 +11,7 @@
 class ExampleLayer : public Mantra::Layer
 {
 public:
-    ExampleLayer() : Layer("Example") {
-
-        mCamera = Mantra::OrthoCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+    ExampleLayer() : Layer("Example"), mCameraController(1280.0f / 720.0f) {
 
         mTriangleVA.reset(Mantra::VertexArray::Create());
 
@@ -179,13 +177,11 @@ public:
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
 
-        mCamera.SetPosition({0.0f, 0.0f, 0.0f});
-        float speed = 60.0f;  // degrees per second
-        // mCamera.SetRotation(mCamera.GetRotation() + ts * speed);
+        mCameraController.OnUpdate(ts);
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
-        Mantra::Renderer::BeginScene(mCamera);
+        Mantra::Renderer::BeginScene(mCameraController.GetCamera());
 
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
@@ -215,10 +211,10 @@ public:
         ImGui::End();
     }
 
-    void OnEvent(Mantra::Event& event) override {}
+    void OnEvent(Mantra::Event& event) override { mCameraController.OnEvent(event); }
 
 private:
-    Mantra::OrthoCamera mCamera;
+    Mantra::OrthoCameraController mCameraController;
 
     glm::vec3 mSquareColor = {0.2f, 0.3f, 0.4f};
 

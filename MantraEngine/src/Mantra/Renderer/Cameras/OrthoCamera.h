@@ -16,6 +16,8 @@ public:
     float GetRotation() const { return mRotation; }
     void SetRotation(float rotation);
 
+    void SetProjection(float left, float right, float bottom, float top);
+
     const glm::mat4& GetProjectionMatrix() const { return mProjectionMatrix; }
     const glm::mat4& GetViewMatrix() const { return mViewMatrix; }
     const glm::mat4& GetViewProjectionMatrix() const { return mViewProjectionMatrix; }

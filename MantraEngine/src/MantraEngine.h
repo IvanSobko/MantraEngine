@@ -15,4 +15,5 @@
 #include "Mantra/Renderer/Texture.h"
 #include "Mantra/Renderer/VertexArray.h"
 
+#include "Mantra/OrthoCameraController.h"
 #include "Mantra/Renderer/Cameras/OrthoCamera.h"

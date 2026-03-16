@@ -33,6 +33,7 @@ set(HEADER_FILES
     "src/Mantra/Renderer/Texture.h"
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.h"
+    "src/Mantra/OrthoCameraController.h"
 
     "src/Mantra/Renderer/OpenGL/OpenGLShader.h"
     "src/Mantra/Renderer/OpenGL/OpenGLContext.h"
@@ -67,6 +68,7 @@ set(SRC_FILES
     "src/Mantra/Renderer/Texture.cpp"
 
     "src/Mantra/Renderer/Cameras/OrthoCamera.cpp"
+    "src/Mantra/OrthoCameraController.cpp"
 
     "src/Mantra/Renderer/OpenGL/OpenGLShader.cpp"
     "src/Mantra/Renderer/OpenGL/OpenGLContext.cpp"
