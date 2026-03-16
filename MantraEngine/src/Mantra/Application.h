@@ -32,9 +32,11 @@ public:
 
 private:
     bool OnWindowClose(WindowCloseEvent& e);
+    bool OnWindowResize(WindowResizeEvent& e);
 
     std::unique_ptr<Window> mWindow;
     bool mRunning = true;
+    bool mMinimized = false;
     float mLastFrameTime = 0.0f;
 
     Layerstack mLayerstack;

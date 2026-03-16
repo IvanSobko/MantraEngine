@@ -26,7 +26,5 @@
 // should log be included here?
 #include "Log/Log.h"
 
-#define ME_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
 #define ME_ASSERT(x, ...) { if(!(x)) { ME_ERROR("Assertion Failed: {0}", __VA_ARGS__); ME_DEBUGBREAK; } }
 #define ME_CORE_ASSERT(x, ...) { if(!(x)) { ME_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); ME_DEBUGBREAK; } }

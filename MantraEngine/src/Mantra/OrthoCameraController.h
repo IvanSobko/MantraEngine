@@ -18,6 +18,9 @@ public:
     OrthoCamera& GetCamera() { return mCamera; }
     const OrthoCamera& GetCamera() const { return mCamera; }
 
+    float GetZoomLevel() const { return mZoomLevel; }
+    void SetZoomLevel(float level) { mZoomLevel = level; }
+
 private:
     bool OnMouseScrolled(MouseScrolledEvent& e);
     bool OnWindowResized(WindowResizeEvent& e);

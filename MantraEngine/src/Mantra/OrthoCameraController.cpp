@@ -37,8 +37,10 @@ void OrthoCameraController::OnUpdate(Timestep ts) {
 
 void OrthoCameraController::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
-    dispatcher.Dispatch<MouseScrolledEvent>(ME_BIND_EVENT_FN(OrthoCameraController::OnMouseScrolled));
-    dispatcher.Dispatch<WindowResizeEvent>(ME_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
+    dispatcher.Dispatch<MouseScrolledEvent>(
+        std::bind(&OrthoCameraController::OnMouseScrolled, this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowResizeEvent>(
+        std::bind(&OrthoCameraController::OnWindowResized, this, std::placeholders::_1));
 }
 
 bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent& e) {

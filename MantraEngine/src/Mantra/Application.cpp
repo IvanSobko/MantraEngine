@@ -35,8 +35,9 @@ void Application::Run() {
         Timestep timestep = time - mLastFrameTime;
         mLastFrameTime = time;
 
-        for (Layer* layer : mLayerstack) {
-            layer->OnUpdate(timestep);
+        if (!mMinimized) {
+            for (Layer* layer : mLayerstack)
+                layer->OnUpdate(timestep);
         }
 
         mImGuiLayer->Begin();
@@ -52,6 +53,7 @@ void Application::Run() {
 void Application::OnEvent(Event& e) {
     EventDispatcher dispatcher(e);
     dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+    dispatcher.Dispatch<WindowResizeEvent>(std::bind(&Application::OnWindowResize, this, std::placeholders::_1));
 
     for (auto it = mLayerstack.end(); it != mLayerstack.begin();) {
         (*--it)->OnEvent(e);
@@ -75,5 +77,16 @@ bool Application::OnWindowClose(WindowCloseEvent& e) {
     mRunning = false;
     //TODO: cleanup glfw context
     return true;
+}
+bool Application::OnWindowResize(WindowResizeEvent& e) {
+    if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+        mMinimized = true;
+        return false;
+    }
+
+    mMinimized = false;
+    Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+    return false;
 }
 }  // namespace Mantra
