@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glad/glad.h>
 #include "Mantra/Renderer/Shader.h"
 
 namespace Mantra {
@@ -7,7 +8,8 @@ namespace Mantra {
 class OpenGLShader : public Shader
 {
 public:
-    OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+    OpenGLShader(const std::string& filepath, const std::string& name = "");
+    OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
     ~OpenGLShader() override final;
 
     void Bind() const override final;
@@ -23,9 +25,10 @@ public:
     void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
 private:
-    uint32_t mRendererID;
+    std::vector<GLuint> Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+    bool Link(const std::vector<GLuint>& shaderIDs);
 
-private:
+    uint32_t mRendererID;
 };
 
 }  // namespace Mantra

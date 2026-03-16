@@ -13,6 +13,8 @@ class ExampleLayer : public Mantra::Layer
 public:
     ExampleLayer() : Layer("Example"), mCameraController(1280.0f / 720.0f) {
 
+        mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
+
         mTriangleVA.reset(Mantra::VertexArray::Create());
 
         // Vertex format: position (3 floats), color (4 floats)
@@ -93,7 +95,7 @@ public:
 			}
 		)";
 
-        mTriangleShader.reset(Mantra::Shader::Create(vertexSrc, fragmentSrc));
+        mShaderLibrary->Add(std::make_shared<Mantra::OpenGLShader>("triangle", vertexSrc, fragmentSrc));
 
         std::string blueShaderVertexSrc = R"(
 			#version 330 core
@@ -127,52 +129,21 @@ public:
 			}
 		)";
 
-        mSquareShader.reset(Mantra::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
+        mShaderLibrary->Add(
+            std::make_shared<Mantra::OpenGLShader>("blueBoxes", blueShaderVertexSrc, blueShaderFragmentSrc));
+        mShaderLibrary->Load("assets/shaders/texture.glsl");
 
-        std::string textureShaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec2 v_TexCoord;
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
-			}
-		)";
-
-        std::string textureShaderFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-			
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-		)";
-
-        mTextureShader.reset(Mantra::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mTextureShader)->Bind();
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mTextureShader)->SetUniformInt("u_Texture", 0);
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("texture"))->Bind();
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("texture"))->SetUniformInt("u_Texture", 0);
 
         mRGBTexture = Mantra::Texture2D::Create("assets/checkerboard.png");
         mRGBATexture = Mantra::Texture2D::Create("assets/logo.png");
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mSquareShader)->Bind();
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mSquareShader)->SetUniformFloat3("u_Color", mSquareColor);
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("blueBoxes"))->Bind();
+        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("blueBoxes"))
+            ->SetUniformFloat3("u_Color", mSquareColor);
 
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
@@ -187,7 +158,7 @@ public:
             for (int x = 0; x < 10; x++) {
                 glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                 glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-                Mantra::Renderer::Submit(mSquareShader, mSquareVA, transform);
+                Mantra::Renderer::Submit(mShaderLibrary->Get("blueBoxes"), mSquareVA, transform);
             }
         }
 
@@ -196,11 +167,11 @@ public:
         glm::mat4 texTransform = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f));
 
         mRGBTexture->Bind();
-        Mantra::Renderer::Submit(mTextureShader, mSquareVA, texTransform);
+        Mantra::Renderer::Submit(mShaderLibrary->Get("texture"), mSquareVA, texTransform);
 
         texTransform = glm::translate(texTransform, {0.0f, 0.0f, 0.1f});
         mRGBATexture->Bind();
-        Mantra::Renderer::Submit(mTextureShader, mSquareVA, texTransform);
+        Mantra::Renderer::Submit(mShaderLibrary->Get("texture"), mSquareVA, texTransform);
 
         Mantra::Renderer::EndScene();
     }
@@ -218,13 +189,10 @@ private:
 
     glm::vec3 mSquareColor = {0.2f, 0.3f, 0.4f};
 
-    std::shared_ptr<Mantra::Shader> mTriangleShader;
+    std::unique_ptr<Mantra::ShaderLibrary> mShaderLibrary;
+
     std::shared_ptr<Mantra::VertexArray> mTriangleVA;
-
-    std::shared_ptr<Mantra::Shader> mSquareShader;
     std::shared_ptr<Mantra::VertexArray> mSquareVA;
-
-    std::shared_ptr<Mantra::Shader> mTextureShader;
     std::shared_ptr<Mantra::Texture2D> mRGBTexture, mRGBATexture;
 };
 

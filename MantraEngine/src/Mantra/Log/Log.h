@@ -7,6 +7,10 @@
 #define LOG_LOC ::spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}
 
 // Engine log macros
+
+// temp dev log macros, will be removed in the future
+#define MLOG(...) ::Mantra::Log::GetEngineLogger().get()->log(LOG_LOC, spdlog::level::debug, __VA_ARGS__);
+
 #define ME_CORE_TRACE(...) ::Mantra::Log::GetEngineLogger().get()->log(LOG_LOC, spdlog::level::trace, __VA_ARGS__);
 #define ME_CORE_INFO(...)  ::Mantra::Log::GetEngineLogger().get()->log(LOG_LOC, spdlog::level::info, __VA_ARGS__);
 #define ME_CORE_WARN(...)  ::Mantra::Log::GetEngineLogger().get()->log(LOG_LOC, spdlog::level::warn, __VA_ARGS__);
