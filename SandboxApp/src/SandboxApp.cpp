@@ -11,7 +11,7 @@
 class ExampleLayer : public Mantra::Layer
 {
 public:
-    ExampleLayer() : Layer("Example"), mCameraController(1280.0f / 720.0f) {
+    ExampleLayer() : Layer("Example"), mCameraController(1280.0f / 720.0f, true) {
 
         mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
 

@@ -36,8 +36,9 @@ void Application::Run() {
         mLastFrameTime = time;
 
         if (!mMinimized) {
-            for (Layer* layer : mLayerstack)
+            for (Layer* layer : mLayerstack) {
                 layer->OnUpdate(timestep);
+            }
         }
 
         mImGuiLayer->Begin();

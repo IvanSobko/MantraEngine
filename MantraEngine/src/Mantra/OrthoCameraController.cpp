@@ -11,21 +11,25 @@ OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
       mRotation(rotation) {}
 
 void OrthoCameraController::OnUpdate(Timestep ts) {
-    if (Input::IsKeyPressed(ME_KEY_A))
+    //TODO: camera position should not be based on rotation
+    if (Input::IsKeyPressed(ME_KEY_A)) {
         mCameraPosition.x -= mCameraTranslationSpeed * ts;
-    else if (Input::IsKeyPressed(ME_KEY_D))
+    } else if (Input::IsKeyPressed(ME_KEY_D)) {
         mCameraPosition.x += mCameraTranslationSpeed * ts;
+    }
 
-    if (Input::IsKeyPressed(ME_KEY_W))
+    if (Input::IsKeyPressed(ME_KEY_W)) {
         mCameraPosition.y += mCameraTranslationSpeed * ts;
-    else if (Input::IsKeyPressed(ME_KEY_S))
+    } else if (Input::IsKeyPressed(ME_KEY_S)) {
         mCameraPosition.y -= mCameraTranslationSpeed * ts;
+    }
 
     if (mRotation) {
-        if (Input::IsKeyPressed(ME_KEY_Q))
+        if (Input::IsKeyPressed(ME_KEY_Q)) {
             mCameraRotation += mCameraRotationSpeed * ts;
-        if (Input::IsKeyPressed(ME_KEY_E))
+        } else if (Input::IsKeyPressed(ME_KEY_E)) {
             mCameraRotation -= mCameraRotationSpeed * ts;
+        }
 
         mCamera.SetRotation(mCameraRotation);
     }
