@@ -16,8 +16,8 @@ namespace Mantra {
 struct ApplicationProps {
     std::string name = "Mantra Engine";
     std::string workingDirectory;
-    int width = 1920;
-    int height = 1200;
+    int width = 1280;
+    int height = 720;
 };
 
 class MANTRA_API Application
@@ -36,6 +36,9 @@ public:
     inline Window& GetWindow() { return *mWindow; }
 
     inline static Application& Get() { return *sInstance; }
+
+    void SetVSync(bool enabled);
+    bool IsVSync() const;
 
 private:
     bool OnWindowClose(WindowCloseEvent& e);

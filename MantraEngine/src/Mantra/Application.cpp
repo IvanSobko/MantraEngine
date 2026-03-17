@@ -74,6 +74,14 @@ void Application::PushOverlay(Layer* layer) {
     layer->OnAttach();
 }
 
+void Application::SetVSync(bool enabled) {
+    mWindow->SetVSync(enabled);
+}
+
+bool Application::IsVSync() const {
+    return mWindow->IsVSync();
+}
+
 bool Application::OnWindowClose(WindowCloseEvent& e) {
     mRunning = false;
     //TODO: cleanup glfw context

@@ -10,7 +10,7 @@ void Renderer::Init() {
     RenderCommand::Init();
 }
 
-void Renderer::BeginScene(OrthoCamera& camera) {
+void Renderer::BeginScene(Camera& camera) {
     mSceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 }
 

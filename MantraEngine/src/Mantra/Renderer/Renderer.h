@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cameras/OrthoCamera.h"
+#include "Camera/Camera.h"
 #include "RenderCommand.h"
 #include "RendererAPI.h"
 #include "Shader.h"
@@ -11,7 +11,7 @@ class Renderer
 {
 public:
     static void Init();
-    static void BeginScene(OrthoCamera& camera);
+    static void BeginScene(Camera& camera);
     static void EndScene();
 
     static void Submit(const std::shared_ptr<Shader>& shader,
