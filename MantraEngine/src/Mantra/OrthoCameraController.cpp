@@ -11,17 +11,25 @@ OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
       mRotation(rotation) {}
 
 void OrthoCameraController::OnUpdate(Timestep ts) {
-    //TODO: camera position should not be based on rotation
+    float currentSpeed = mCameraTranslationSpeed * ts;
+    if (Input::IsKeyPressed(ME_KEY_LEFT_SHIFT)) {
+        currentSpeed *= 2.0f;
+    }
+
     if (Input::IsKeyPressed(ME_KEY_A)) {
-        mCameraPosition.x -= mCameraTranslationSpeed * ts;
+        mCameraPosition.x -= cos(glm::radians(mCameraRotation)) * currentSpeed;
+        mCameraPosition.y -= sin(glm::radians(mCameraRotation)) * currentSpeed;
     } else if (Input::IsKeyPressed(ME_KEY_D)) {
-        mCameraPosition.x += mCameraTranslationSpeed * ts;
+        mCameraPosition.x += cos(glm::radians(mCameraRotation)) * currentSpeed;
+        mCameraPosition.y += sin(glm::radians(mCameraRotation)) * currentSpeed;
     }
 
     if (Input::IsKeyPressed(ME_KEY_W)) {
-        mCameraPosition.y += mCameraTranslationSpeed * ts;
+        mCameraPosition.x += -sin(glm::radians(mCameraRotation)) * currentSpeed;
+        mCameraPosition.y += cos(glm::radians(mCameraRotation)) * currentSpeed;
     } else if (Input::IsKeyPressed(ME_KEY_S)) {
-        mCameraPosition.y -= mCameraTranslationSpeed * ts;
+        mCameraPosition.x -= -sin(glm::radians(mCameraRotation)) * currentSpeed;
+        mCameraPosition.y -= cos(glm::radians(mCameraRotation)) * currentSpeed;
     }
 
     if (mRotation) {
@@ -29,6 +37,12 @@ void OrthoCameraController::OnUpdate(Timestep ts) {
             mCameraRotation += mCameraRotationSpeed * ts;
         } else if (Input::IsKeyPressed(ME_KEY_E)) {
             mCameraRotation -= mCameraRotationSpeed * ts;
+        }
+
+        if (mCameraRotation > 180.0f) {
+            mCameraRotation -= 360.0f;
+        } else if (mCameraRotation <= -180.0f) {
+            mCameraRotation += 360.0f;
         }
 
         mCamera.SetRotation(mCameraRotation);

@@ -30,7 +30,6 @@ void GLFWWindow::Init(const WindowProps& props) {
     ME_CORE_INFO("Creating window {0} ({1}, {2})", props.title, props.width, props.height);
 
     if (!GLFWInitialized) {
-        // TODO: glfwTerminate on system shutdown
         int success = glfwInit();
         if (!success) {
             ME_CORE_ERROR("Could not intialize GLFW!");
@@ -128,6 +127,11 @@ void GLFWWindow::Init(const WindowProps& props) {
 
 void GLFWWindow::Shutdown() {
     glfwDestroyWindow(mWindow);
+
+    if (GLFWInitialized) {
+        ME_CORE_INFO("GLFW terminated.");
+        glfwTerminate();
+    }
 }
 
 void GLFWWindow::OnUpdate() {
