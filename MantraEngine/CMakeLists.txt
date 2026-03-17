@@ -148,7 +148,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR})
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
 
 if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE ME_DEBUG)
 else()
-    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_BUILD_DLL GLFW_INCLUDE_NONE) # GLFW_INCLUDE_NONE to force not include opengl in glfw files
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ME_BUILD_DLL GLFW_INCLUDE_NONE ME_DEBUG) # GLFW_INCLUDE_NONE to force not include opengl in glfw files
 endif()

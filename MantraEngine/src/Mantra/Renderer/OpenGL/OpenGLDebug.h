@@ -4,8 +4,6 @@
 
 #include <glad/glad.h>
 
-#define ME_DEBUG
-
 namespace Mantra {
 class OpenGLDebug
 {
