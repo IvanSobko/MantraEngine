@@ -1,92 +1,17 @@
 project(MantraEngine)
 
-set(HEADER_FILES
-    "src/MantraEngine.h"
-    "src/Mantra/Application.h"
-    "src/Mantra/Core.h"
-    "src/Mantra/EntryPoint.h"
-
-    "src/Mantra/Events/Event.h"
-    "src/Mantra/Events/KeyEvent.h"
-    "src/Mantra/Events/MouseEvent.h"
-    "src/Mantra/Events/ApplicationEvent.h"
-
-    "src/Mantra/Log/Log.h"
-
-    "src/Mantra/Window/Window.h"
-    "src/Mantra/Window/GLFWWindow.h"
-
-    "src/Mantra/Layers/Layer.h"
-    "src/Mantra/Layers/Layerstack.h"
-    "src/Mantra/Layers/ImGuiLayer.h"
-
-    "src/Mantra/Input/Input.h"
-    "src/Mantra/Input/GLFWInput.h"
-
-    "src/Mantra/Renderer/GraphicsContext.h"
-    "src/Mantra/Renderer/Renderer.h"
-    "src/Mantra/Renderer/RenderCommand.h"
-    "src/Mantra/Renderer/RendererAPI.h"
-    "src/Mantra/Renderer/Buffer.h"
-    "src/Mantra/Renderer/Shader.h"
-    "src/Mantra/Renderer/VertexArray.h"
-    "src/Mantra/Renderer/Texture.h"
-
-    "src/Mantra/Renderer/Cameras/OrthoCamera.h"
-    "src/Mantra/OrthoCameraController.h"
-
-    "src/Mantra/Renderer/OpenGL/OpenGLShader.h"
-    "src/Mantra/Renderer/OpenGL/OpenGLContext.h"
-    "src/Mantra/Renderer/OpenGL/OpenGLBuffer.h"
-    "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.h"
-    "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.h"
-    "src/Mantra/Renderer/OpenGL/OpenGLTexture.h"
-    
+file(GLOB_RECURSE ENGINE_SOURCES 
+    "src/*.cpp"
+    "src/*.c"
 )
 
-set(PCH_FILES
-    "src/ME_PCH.h")
-
-set(SRC_FILES
-    "src/Mantra/Application.cpp"
-
-    "src/Mantra/Log/Log.cpp"
-
-    "src/Mantra/Window/GLFWWindow.cpp"
-
-    "src/Mantra/Layers/Layerstack.cpp"
-    "src/Mantra/Layers/ImGuiLayer.cpp"
-
-    "src/Mantra/Input/GLFWInput.cpp"
-
-    "src/Mantra/Renderer/Renderer.cpp"
-    "src/Mantra/Renderer/RenderCommand.cpp"
-    "src/Mantra/Renderer/RendererAPI.cpp"
-    "src/Mantra/Renderer/Buffer.cpp"
-    "src/Mantra/Renderer/Shader.cpp"
-    "src/Mantra/Renderer/VertexArray.cpp"
-    "src/Mantra/Renderer/Texture.cpp"
-
-    "src/Mantra/Renderer/Cameras/OrthoCamera.cpp"
-    "src/Mantra/OrthoCameraController.cpp"
-
-    "src/Mantra/Renderer/OpenGL/OpenGLShader.cpp"
-    "src/Mantra/Renderer/OpenGL/OpenGLContext.cpp"
-    "src/Mantra/Renderer/OpenGL/OpenGLBuffer.cpp"
-    "src/Mantra/Renderer/OpenGL/OpenGLVertexArray.cpp"
-    "src/Mantra/Renderer/OpenGL/OpenGLRendererAPI.cpp"
-    "src/Mantra/Renderer/OpenGL/OpenGLTexture.cpp"
-)
-
-set(ALL_FILES
-    ${HEADER_FILES}
-    ${SRC_FILES}
-    ${PCH_FILES}
+file(GLOB_RECURSE ENGINE_HEADERS 
+    "src/*.h"
+    "src/*.hpp"
 )
 
 # ===== OPENGL & GLFW & GLAD & GLM =====
-find_package( OpenGL REQUIRED )
-include_directories( ${OPENGL_INCLUDE_DIRS} )
+find_package(OpenGL REQUIRED)
 
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
@@ -100,27 +25,18 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/glm)
 
 # ========== spdlog ==============
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-
 add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/spdlog)
 
 # ========== imgui ==============
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/imgui)
-
 file(GLOB IMGUI_FILES ${IMGUI_DIR}/*.cpp ${IMGUI_DIR}/*.h)
-
-set(IMGUI_FILES ${IMGUI_FILES}  ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp  ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp)
-
-# Add ImGui include directories as PUBLIC so client apps can include ImGui headers
-
-set(ALL_FILES ${ALL_FILES} ${IMGUI_FILES})
+set(IMGUI_FILES ${IMGUI_FILES} 
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp  
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp)
 
 # ========== stb_image ==============
-# add_subdirectory(${CMAKE_SOURCE_DIR}/MantraEngine/libs/stb_image)
-
 set(STB_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/stb_image)
 file(GLOB STB_FILES ${STB_DIR}/*.cpp ${STB_DIR}/*.h)
-
-set(ALL_FILES ${ALL_FILES} ${STB_FILES})
 
 # ================================
 
@@ -133,19 +49,25 @@ if(MSVC)
     )
 endif()
 
-
-add_library(${PROJECT_NAME} SHARED ${ALL_FILES})
+# Create library with all collected files
+add_library(${PROJECT_NAME} SHARED 
+    ${ENGINE_SOURCES}
+    ${ENGINE_HEADERS}
+    ${IMGUI_FILES}
+    ${STB_FILES}
+)
 
 target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog glm::glm)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/libs/spdlog/include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    ${IMGUI_DIR} 
+    ${IMGUI_DIR}/backends
+    ${PROJECT_SOURCE_DIR}/libs/spdlog/include
+    ${PROJECT_SOURCE_DIR}/src
+    ${STB_DIR}
+)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${STB_DIR})
-target_include_directories(${PROJECT_NAME} PUBLIC ${IMGUI_DIR})
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_FILES})
+target_precompile_headers(${PROJECT_NAME} PRIVATE "src/ME_PCH.h")
 
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE ME_PLATFORM_WINDOWS ME_BUILD_DLL GLFW_INCLUDE_NONE ME_DEBUG)
