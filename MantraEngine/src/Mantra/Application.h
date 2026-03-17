@@ -13,10 +13,17 @@
 
 namespace Mantra {
 
+struct ApplicationProps {
+    std::string name = "Mantra Engine";
+    std::string workingDirectory;
+    int width = 1920;
+    int height = 1200;
+};
+
 class MANTRA_API Application
 {
 public:
-    Application();
+    Application(const ApplicationProps& props = ApplicationProps());
     virtual ~Application();
 
     void Run();

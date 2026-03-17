@@ -1,5 +1,4 @@
 #include "Mantra/Application.h"
-#include "Mantra/EntryPoint.h"
 
 #include "Mantra/Timestep.h"
 

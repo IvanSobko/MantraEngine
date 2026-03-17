@@ -7,7 +7,7 @@
 namespace Mantra {
 Application* Application::sInstance = nullptr;
 
-Application::Application() {
+Application::Application(const ApplicationProps& props) {
     if (sInstance) {
         ME_CORE_ERROR("Trying to create another Application instance.");
         assert(true);
@@ -16,7 +16,7 @@ Application::Application() {
 
     sInstance = this;
 
-    mWindow = std::unique_ptr<Window>(Window::Create());
+    mWindow = std::unique_ptr<Window>(Window::Create(Mantra::WindowProps(props.name, props.width, props.height)));
     mWindow->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
     Renderer::Init();

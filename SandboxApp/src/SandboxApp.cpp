@@ -1,3 +1,4 @@
+#include <Mantra/EntryPoint.h>
 #include <MantraEngine.h>
 
 #include <iostream>
