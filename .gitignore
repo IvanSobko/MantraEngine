@@ -1,2 +1,5 @@
 build/
 .vscode/
+
+# Ignore imgui settings
+*.ini

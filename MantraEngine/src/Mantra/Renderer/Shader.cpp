@@ -5,24 +5,25 @@
 
 namespace Mantra {
 
-Shader* Shader::Create(const std::string& filepath, const std::string& name) {
+std::shared_ptr<Shader> Shader::Create(const std::string& filepath, const std::string& name) {
     switch (Renderer::GetAPI()) {
         case RendererAPI::API::None:
             ME_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
-        case RendererAPI::API::OpenGL: return new OpenGLShader(filepath, name);
+        case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(filepath, name);
     }
 
     ME_CORE_ASSERT(false, "Unknown RendererAPI!");
     return nullptr;
 }
 
-Shader* Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
+std::shared_ptr<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc,
+                                       const std::string& fragmentSrc) {
     switch (Renderer::GetAPI()) {
         case RendererAPI::API::None:
             ME_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
-        case RendererAPI::API::OpenGL: return new OpenGLShader(name, vertexSrc, fragmentSrc);
+        case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
     }
 
     ME_CORE_ASSERT(false, "Unknown RendererAPI!");

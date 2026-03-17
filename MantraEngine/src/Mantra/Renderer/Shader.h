@@ -13,9 +13,18 @@ public:
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
 
+    virtual void SetUniformInt(const std::string& name, int value) = 0;
+    virtual void SetUniformFloat(const std::string& name, float value) = 0;
+    virtual void SetUniformFloat2(const std::string& name, const glm::vec2& vector) = 0;
+    virtual void SetUniformFloat3(const std::string& name, const glm::vec3& vector) = 0;
+    virtual void SetUniformFloat4(const std::string& name, const glm::vec4& vector) = 0;
+    virtual void SetUniformMat3f(const std::string& name, const glm::mat3& matrix) = 0;
+    virtual void SetUniformMat4f(const std::string& name, const glm::mat4& matrix) = 0;
+
     // name is optional, if not provided, it will be extracted from the filepath
-    static Shader* Create(const std::string& filepath, const std::string& name = "");
-    static Shader* Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+    static std::shared_ptr<Shader> Create(const std::string& filepath, const std::string& name = "");
+    static std::shared_ptr<Shader> Create(const std::string& name, const std::string& vertexSrc,
+                                          const std::string& fragmentSrc);
 
     const std::string& GetName() const { return mName; }
 

@@ -15,7 +15,7 @@ public:
     virtual const BufferLayout& GetLayout() const = 0;
     virtual void SetLayout(const BufferLayout& layout) = 0;
 
-    static VertexBuffer* Create(float* vertices, uint32_t size);
+    static std::shared_ptr<VertexBuffer> Create(float* vertices, uint32_t size);
 };
 
 class IndexBuffer
@@ -28,7 +28,7 @@ public:
 
     virtual uint32_t GetCount() const = 0;
 
-    static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+    static std::shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t size);
 };
 
 enum class ShaderDataType { None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool };

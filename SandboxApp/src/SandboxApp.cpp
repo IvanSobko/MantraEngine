@@ -18,7 +18,7 @@ public:
         mCameraController.GetCamera().SetRotation({-20.0f, 0.0f, 0.0f});
         mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
 
-        mSquareVA.reset(Mantra::VertexArray::Create());
+        mSquareVA = Mantra::VertexArray::Create();
 
         // Vertex format: position (3 floats), tex coords (2 floats)
         float squareVertices[5 * 4] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -29,8 +29,8 @@ public:
 
                                        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f};
 
-        std::shared_ptr<Mantra::VertexBuffer> squareVB;
-        squareVB.reset(Mantra::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+        std::shared_ptr<Mantra::VertexBuffer> squareVB =
+            Mantra::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
         squareVB->SetLayout({
             {Mantra::ShaderDataType::Float3, "a_Position"},
             {Mantra::ShaderDataType::Float2, "a_TexCoord"},
@@ -38,11 +38,11 @@ public:
         mSquareVA->AddVertexBuffer(squareVB);
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-        std::shared_ptr<Mantra::IndexBuffer> squareIB;
-        squareIB.reset(Mantra::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+        std::shared_ptr<Mantra::IndexBuffer> squareIB =
+            Mantra::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         mSquareVA->SetIndexBuffer(squareIB);
 
-        mCubeVA.reset(Mantra::VertexArray::Create());
+        mCubeVA = Mantra::VertexArray::Create();
 
         // Cube vertices: position (3 floats) for all 6 faces
         float cubeVertices[8 * 3] = {// Back face
@@ -50,8 +50,7 @@ public:
                                      // Front face
                                      -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f};
 
-        std::shared_ptr<Mantra::VertexBuffer> cubeVB;
-        cubeVB.reset(Mantra::VertexBuffer::Create(cubeVertices, sizeof(cubeVertices)));
+        std::shared_ptr<Mantra::VertexBuffer> cubeVB = Mantra::VertexBuffer::Create(cubeVertices, sizeof(cubeVertices));
         cubeVB->SetLayout({{Mantra::ShaderDataType::Float3, "a_Position"}});
         mCubeVA->AddVertexBuffer(cubeVB);
 
@@ -69,8 +68,8 @@ public:
                                     // Top face
                                     3, 2, 6, 6, 7, 3};
 
-        std::shared_ptr<Mantra::IndexBuffer> cubeIB;
-        cubeIB.reset(Mantra::IndexBuffer::Create(cubeIndices, sizeof(cubeIndices) / sizeof(uint32_t)));
+        std::shared_ptr<Mantra::IndexBuffer> cubeIB =
+            Mantra::IndexBuffer::Create(cubeIndices, sizeof(cubeIndices) / sizeof(uint32_t));
         mCubeVA->SetIndexBuffer(cubeIB);
 
         std::string cubeVertexSrc = R"(
@@ -100,17 +99,16 @@ public:
         mShaderLibrary->Add(std::make_shared<Mantra::OpenGLShader>("cube", cubeVertexSrc, cubeFragmentSrc));
         mShaderLibrary->Load("../assets/shaders/texture.glsl");
 
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("texture"))->Bind();
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("texture"))->SetUniformInt("u_Texture", 0);
+        mShaderLibrary->Get("texture")->Bind();
+        mShaderLibrary->Get("texture")->SetUniformInt("u_Texture", 0);
 
         mRGBTexture = Mantra::Texture2D::Create("../assets/checkerboard.png");
         // mRGBATexture = Mantra::Texture2D::Create("../assets/logo.png");
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("cube"))->Bind();
-        std::dynamic_pointer_cast<Mantra::OpenGLShader>(mShaderLibrary->Get("cube"))
-            ->SetUniformFloat4("u_Color", mSquareColor);
+        mShaderLibrary->Get("cube")->Bind();
+        mShaderLibrary->Get("cube")->SetUniformFloat4("u_Color", mSquareColor);
 
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
