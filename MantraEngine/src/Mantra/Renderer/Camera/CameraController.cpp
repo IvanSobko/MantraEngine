@@ -26,6 +26,7 @@ void CameraController<CameraType>::OnUpdate(Timestep ts) {
     float rollRad = glm::radians(currentCameraRotation.z);
 
     // Create rotation matrix that includes all three rotations
+    //TODO: expensive, change to quaternions later
     glm::mat3 rotationMatrix = glm::mat3(glm::rotate(glm::mat4(1.0f), yawRad, glm::vec3(0, 1, 0)) *
                                          glm::rotate(glm::mat4(1.0f), pitchRad, glm::vec3(1, 0, 0)) *
                                          glm::rotate(glm::mat4(1.0f), rollRad, glm::vec3(0, 0, 1)));
