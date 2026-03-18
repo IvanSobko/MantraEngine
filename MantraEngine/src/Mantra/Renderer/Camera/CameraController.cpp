@@ -1,4 +1,4 @@
-#include "OrthoCameraController.h"
+#include "CameraController.h"
 #include "Mantra/Input/Input.h"
 #include "Mantra/KeyCodes.h"
 
@@ -31,9 +31,9 @@ void CameraController<CameraType>::OnUpdate(Timestep ts) {
                                          glm::rotate(glm::mat4(1.0f), rollRad, glm::vec3(0, 0, 1)));
 
     // Calculate camera-relative directions using the full rotation matrix
-    glm::vec3 forward = -rotationMatrix[2];  // Negative Z in camera space
-    glm::vec3 right = rotationMatrix[0];     // Positive X in camera space
-    glm::vec3 up = rotationMatrix[1];        // Positive Y in camera space
+    glm::vec3 forward = -rotationMatrix[2];  // -z in camera space
+    glm::vec3 right = rotationMatrix[0];     // +x in camera space
+    glm::vec3 up = rotationMatrix[1];        // +y in camera space
 
     if (Input::IsKeyPressed(ME_KEY_W)) {
         currentCameraPosition += forward * mCameraTranslationSpeed * deltaTime;
@@ -53,17 +53,14 @@ void CameraController<CameraType>::OnUpdate(Timestep ts) {
         currentCameraPosition.y -= mCameraTranslationSpeed * deltaTime;
     }
 
-    // Rotation controls
-    if (Input::IsKeyPressed(ME_KEY_UP)) {
-        currentCameraRotation.x += mCameraRotationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_DOWN)) {
-        currentCameraRotation.x -= mCameraRotationSpeed * deltaTime;
-    }
+    auto [x, y] = Input::GetMousePosition();
+    const glm::vec2& mouse{x, y};
+    glm::vec2 delta = (mouse - mMousePosition) * 0.003f;
+    mMousePosition = mouse;
 
-    if (Input::IsKeyPressed(ME_KEY_LEFT)) {
-        currentCameraRotation.y -= mCameraRotationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_RIGHT)) {
-        currentCameraRotation.y += mCameraRotationSpeed * deltaTime;
+    if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_RIGHT)) {
+        currentCameraRotation.y += delta.x * mCameraRotationSpeed;
+        currentCameraRotation.x += delta.y * mCameraRotationSpeed;
     }
 
     if (Input::IsKeyPressed(ME_KEY_Q)) {
@@ -78,9 +75,14 @@ void CameraController<CameraType>::OnUpdate(Timestep ts) {
     mCamera.SetPosition(currentCameraPosition);
     mCamera.SetRotation(currentCameraRotation);
 
-    MLOG("Camera position: ({:.2f}, {:.2f}, {:.2f}), rotation: ({:.2f}, {:.2f}, {:.2f})", currentCameraPosition.x,
-         currentCameraPosition.y, currentCameraPosition.z, currentCameraRotation.x, currentCameraRotation.y,
-         currentCameraRotation.z);
+    float fov = 0.0f;
+    if constexpr (std::is_same_v<CameraType, PerspectiveCamera>) {
+        fov = mCamera.GetFOV();
+    }
+
+    MLOG("Camera position: ({:.2f}, {:.2f}, {:.2f}), rotation: ({:.2f}, {:.2f}, {:.2f}), fov: {:.2f}",
+         currentCameraPosition.x, currentCameraPosition.y, currentCameraPosition.z, currentCameraRotation.x,
+         currentCameraRotation.y, currentCameraRotation.z, fov);
 }
 
 template <typename CameraType>

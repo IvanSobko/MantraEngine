@@ -33,6 +33,8 @@ private:
     float mZoomLevel = 1.0f;
     CameraType mCamera;
 
+    glm::vec2 mMousePosition{0.0f, 0.0f};
+
     float mCameraTranslationSpeed = 5.0f;
     float mCameraRotationSpeed = 90.0f;
 };
