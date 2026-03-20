@@ -14,7 +14,13 @@ public:
                        float farPlane = 100.0f);
 
 protected:
-    void RecalculateViewMatrix() override;
+    void UpdateProjectionMatrix() override;
+    void UpdateViewMatrix() override;
+
+private:
+    glm::vec4 mProjectionBounds{0.0f, 0.0f, 0.0f, 0.0f};  // left, right, bottom, top
+    float mNearPlane = -100.0f;
+    float mFarPlane = 100.0f;
 };
 
 }  // namespace Mantra

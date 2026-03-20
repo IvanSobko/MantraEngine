@@ -17,73 +17,19 @@ CameraController<CameraType>::CameraController(float aspectRatio) : mAspectRatio
 
 template <typename CameraType>
 void CameraController<CameraType>::OnUpdate(Timestep ts) {
-    glm::vec3 currentCameraPosition = mCamera.GetPosition();
-    glm::vec3 currentCameraRotation = mCamera.GetRotation();
+    glm::vec3 pos = mCamera.GetPosition();
+    glm::vec3 rot = mCamera.GetRotation();
     float deltaTime = ts.GetSeconds();
 
-    float yawRad = glm::radians(currentCameraRotation.y);
-    float pitchRad = glm::radians(currentCameraRotation.x);
-    float rollRad = glm::radians(currentCameraRotation.z);
+    // maybe abolish controller and just have the camera handle input directly?
 
-    // Create rotation matrix that includes all three rotations
-    //TODO: expensive, change to quaternions later
-    glm::mat3 rotationMatrix = glm::mat3(glm::rotate(glm::mat4(1.0f), yawRad, glm::vec3(0, 1, 0)) *
-                                         glm::rotate(glm::mat4(1.0f), pitchRad, glm::vec3(1, 0, 0)) *
-                                         glm::rotate(glm::mat4(1.0f), rollRad, glm::vec3(0, 0, 1)));
+    if (Input::IsKeyPressed(ME_KEY_A)) {}
+    if (Input::IsKeyPressed(ME_KEY_D)) {}
 
-    // Calculate camera-relative directions using the full rotation matrix
-    glm::vec3 forward = -rotationMatrix[2];  // -z in camera space
-    glm::vec3 right = rotationMatrix[0];     // +x in camera space
-    glm::vec3 up = rotationMatrix[1];        // +y in camera space
+    MLOG("Camera position: ({:.2f}, {:.2f}, {:.2f})", pos.x, pos.y, pos.z);
 
-    if (Input::IsKeyPressed(ME_KEY_W)) {
-        currentCameraPosition += forward * mCameraTranslationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_S)) {
-        currentCameraPosition -= forward * mCameraTranslationSpeed * deltaTime;
-    }
-    if (Input::IsKeyPressed(ME_KEY_A)) {
-        currentCameraPosition -= right * mCameraTranslationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_D)) {
-        currentCameraPosition += right * mCameraTranslationSpeed * deltaTime;
-    }
-
-    // Vertical movement (world up/down)
-    if (Input::IsKeyPressed(ME_KEY_SPACE)) {
-        currentCameraPosition.y += mCameraTranslationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_LEFT_CONTROL)) {
-        currentCameraPosition.y -= mCameraTranslationSpeed * deltaTime;
-    }
-
-    auto [x, y] = Input::GetMousePosition();
-    const glm::vec2& mouse{x, y};
-    glm::vec2 delta = (mouse - mMousePosition) * 0.003f;
-    mMousePosition = mouse;
-
-    if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_RIGHT)) {
-        currentCameraRotation.y += delta.x * mCameraRotationSpeed;
-        currentCameraRotation.x += delta.y * mCameraRotationSpeed;
-    }
-
-    if (Input::IsKeyPressed(ME_KEY_Q)) {
-        currentCameraRotation.z -= mCameraRotationSpeed * deltaTime;
-    } else if (Input::IsKeyPressed(ME_KEY_E)) {
-        currentCameraRotation.z += mCameraRotationSpeed * deltaTime;
-    }
-
-    // Clamp pitch to avoid gimbal lock
-    currentCameraRotation.x = std::clamp(currentCameraRotation.x, -89.0f, 89.0f);
-
-    mCamera.SetPosition(currentCameraPosition);
-    mCamera.SetRotation(currentCameraRotation);
-
-    float fov = 0.0f;
-    if constexpr (std::is_same_v<CameraType, PerspectiveCamera>) {
-        fov = mCamera.GetFOV();
-    }
-
-    MLOG("Camera position: ({:.2f}, {:.2f}, {:.2f}), rotation: ({:.2f}, {:.2f}, {:.2f}), fov: {:.2f}",
-         currentCameraPosition.x, currentCameraPosition.y, currentCameraPosition.z, currentCameraRotation.x,
-         currentCameraRotation.y, currentCameraRotation.z, fov);
+    mCamera.SetRotation(rot);
+    mCamera.SetPosition(pos);
 }
 
 template <typename CameraType>
