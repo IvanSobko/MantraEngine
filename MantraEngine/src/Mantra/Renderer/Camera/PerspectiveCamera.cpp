@@ -28,10 +28,8 @@ void PerspectiveCamera::SetAspectRatio(float aspectRatio) {
 }
 
 void PerspectiveCamera::SetPosition(const glm::vec3& position) {
-    // mFocalPoint = position; or
-    // mPosition = position; ??
-    // UpdateViewMatrix();
-    // ignore for now, since idk if i want to handle direct position directly
+    mPosition = position;
+    UpdateViewMatrix();
 }
 
 void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane) {
@@ -43,8 +41,6 @@ void PerspectiveCamera::SetProjection(float fov, float aspectRatio, float nearPl
 }
 
 void PerspectiveCamera::UpdateViewMatrix() {
-
-    mPosition = CalculatePosition();
 
     glm::quat orientation = GetQuatRotation();
     mViewMatrix = glm::translate(glm::mat4(1.0f), mPosition) * glm::toMat4(orientation);
@@ -64,19 +60,15 @@ void PerspectiveCamera::OnUpdate(float deltaTime) {
         glm::vec2 delta = (mouse - mPrevMousePosition) * 0.003f;
         mPrevMousePosition = mouse;
 
-        if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_MIDDLE)) {
-            mFocalPoint += -GetRightDirection() * delta.x * mDistance;
-            mFocalPoint += GetUpDirection() * delta.y * mDistance;
+        if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_RIGHT)) {
+            mPosition += -GetRightDirection() * delta.x;
+            mPosition += GetUpDirection() * delta.y;
         } else if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_LEFT)) {
             float rotationSpeed = 0.8f;
-            float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
 
-            mRotation.y += yawSign * delta.x * rotationSpeed;
+            mRotation.y += delta.x * rotationSpeed;
             mRotation.x += delta.y * rotationSpeed;
         }
-
-        MLOG("Camera focal point: ({:.2f}, {:.2f}, {:.2f})", mFocalPoint.x, mFocalPoint.y, mFocalPoint.z);
-        MLOG("Camera distance: {:.2f}", mDistance);
     }
 
     UpdateViewMatrix();
@@ -96,24 +88,17 @@ bool PerspectiveCamera::OnWindowResized(WindowResizeEvent& e) {
 }
 
 bool PerspectiveCamera::OnMouseScrolled(MouseScrolledEvent& e) {
-    float speed = std::min(mDistance, 50.0f);  // max speed = 50
-
-    mDistance -= e.GetYOffset() * 0.1f * speed;
-    mDistance = std::max(mDistance, 0.1f);  // prevent flipping through the focal point
+    float scrollAmount = e.GetYOffset() * 0.1f;
+    mPosition += GetForwardDirection() * scrollAmount;
 
     UpdateViewMatrix();
     return false;
 }
 
 void PerspectiveCamera::ResetView() {
-    mFocalPoint = {0.0f, 0.0f, 0.0f};
-    mDistance = 10.0f;
+    mPosition = {0.0f, 0.0f, 0.0f};
     mRotation = {0.0f, 0.0f, 0.0f};
     UpdateViewMatrix();
-}
-
-glm::vec3 PerspectiveCamera::CalculatePosition() const {
-    return mFocalPoint - GetForwardDirection() * mDistance;
 }
 
 glm::vec3 PerspectiveCamera::GetUpDirection() const {

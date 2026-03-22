@@ -18,7 +18,7 @@ public:
     virtual void SetPosition(const glm::vec3& position);
 
     virtual glm::vec3 GetRotation() const { return mRotation; }
-    virtual glm::quat GetQuatRotation() const { return glm::quat(glm::vec3(-mRotation.x, -mRotation.y, 0.0f)); }
+    virtual glm::quat GetQuatRotation() const { return glm::quat(glm::vec3(-mRotation.x, -mRotation.y, mRotation.z)); }
     virtual void SetRotation(const glm::vec3& rotationRad);
 
     virtual const glm::mat4& GetProjectionMatrix() const { return mProjectionMatrix; }

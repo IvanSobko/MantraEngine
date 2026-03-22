@@ -31,25 +31,20 @@ protected:
     void UpdateViewMatrix() override;
     void UpdateProjectionMatrix() override;
 
-private:
-    bool OnWindowResized(WindowResizeEvent& e);
-    bool OnMouseScrolled(MouseScrolledEvent& e);
-
-    glm::vec3 CalculatePosition() const;
-
     glm::vec3 GetUpDirection() const;
     glm::vec3 GetRightDirection() const;
     glm::vec3 GetForwardDirection() const;
+
+private:
+    bool OnWindowResized(WindowResizeEvent& e);
+    bool OnMouseScrolled(MouseScrolledEvent& e);
 
     float mFOV = 45.0f;
     float mAspectRatio = 16.0f / 9.0f;
     float mNearPlane = 0.1f;
     float mFarPlane = 1000.0f;
 
-    glm::vec3 mFocalPoint = {0.0f, 0.0f, 0.0f};
     glm::vec2 mPrevMousePosition = {0.0f, 0.0f};
-
-    float mDistance = 10.0f;
 };
 
 }  // namespace Mantra
