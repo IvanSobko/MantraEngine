@@ -35,10 +35,10 @@ protected:
     glm::vec3 GetRightDirection() const;
     glm::vec3 GetForwardDirection() const;
 
-private:
     bool OnWindowResized(WindowResizeEvent& e);
-    bool OnMouseScrolled(MouseScrolledEvent& e);
+    virtual bool OnMouseScrolled(MouseScrolledEvent& e);
 
+private:
     float mFOV = 45.0f;
     float mAspectRatio = 16.0f / 9.0f;
     float mNearPlane = 0.1f;

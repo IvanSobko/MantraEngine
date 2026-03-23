@@ -65,8 +65,8 @@ void PerspectiveCamera::OnUpdate(float deltaTime) {
             mPosition += GetUpDirection() * delta.y;
         } else if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_LEFT)) {
             float rotationSpeed = 0.8f;
-
-            mRotation.y += delta.x * rotationSpeed;
+            float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+            mRotation.y += yawSign * delta.x * rotationSpeed;
             mRotation.x += delta.y * rotationSpeed;
         }
     }

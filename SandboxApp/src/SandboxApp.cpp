@@ -1,6 +1,7 @@
 #include <Mantra/EntryPoint.h>
 #include <MantraEngine.h>
 
+#include <glad/glad.h>
 #include <iostream>
 #include "imgui.h"
 
@@ -12,10 +13,10 @@
 class ExampleLayer : public Mantra::Layer
 {
 public:
-    ExampleLayer() : Layer("Example"), mCameraController(1280.0f / 720.0f) {
+    ExampleLayer() : Layer("Example") {
 
-        mCameraController.GetCamera().SetPosition({0.0f, 1.0f, 5.0f});
-        mCameraController.GetCamera().SetRotation({-20.0f, 0.0f, 0.0f});
+        mCamera = std::make_unique<Mantra::PerspectiveCamera>(85.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+
         mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
 
         mSquareVA = Mantra::VertexArray::Create();
@@ -106,19 +107,22 @@ public:
         // mRGBATexture = Mantra::Texture2D::Create("../assets/logo.png");
 
         CreateGrid();
+        CreateFramebuffer(1280, 720);
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+        glViewport(0, 0, (int)m_ViewportSize.x, (int)m_ViewportSize.y);
 
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
 
-        mCameraController.OnUpdate(ts);
+        mCamera->OnUpdate(ts);
 
         // Replace the grid rendering loop with a single large cube
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));  // Make it full size instead of 0.1f
 
-        Mantra::Renderer::BeginScene(mCameraController.GetCamera());
+        Mantra::Renderer::BeginScene(*mCamera);
 
         auto gridShader = mShaderLibrary->Get("grid");
         gridShader->Bind();
@@ -141,9 +145,72 @@ public:
         Mantra::Renderer::Submit(mShaderLibrary->Get("texture"), mSquareVA, texTransform);
 
         Mantra::Renderer::EndScene();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void OnImGuiRender() override {
+        static bool dockspaceOpen = true;
+        static bool opt_fullscreen_persistant = true;
+        bool opt_fullscreen = opt_fullscreen_persistant;
+        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+        // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+        // because it would be confusing to have two docking targets within each others.
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        if (opt_fullscreen) {
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                            ImGuiWindowFlags_NoMove;
+            window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        }
+
+        // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+            window_flags |= ImGuiWindowFlags_NoBackground;
+
+        // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+        // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+        // all active windows docked into it will lose their parent and become undocked.
+        // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+        // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+        ImGui::PopStyleVar();
+
+        if (opt_fullscreen)
+            ImGui::PopStyleVar(2);
+
+        // DockSpace
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+
+        ImGui::Begin("Viewport");
+
+        ImVec2 avail = ImGui::GetContentRegionAvail();
+        if (avail.x > 0 && avail.y > 0) {
+            // Resize framebuffer when ImGui viewport size changes
+            uint32_t newW = (uint32_t)avail.x;
+            uint32_t newH = (uint32_t)avail.y;
+            if (newW != (uint32_t)m_ViewportSize.x || newH != (uint32_t)m_ViewportSize.y) {
+                CreateFramebuffer(newW, newH);
+                // Update camera aspect ratio if your camera exposes a setter:
+                // mCameraController.OnResize(newW, newH); // or equivalent API
+            }
+
+            // ImGui expects a void* texture id for OpenGL textures:
+            ImGui::Image((void*)(intptr_t)m_ColorAttachment, avail, ImVec2(0, 1), ImVec2(1, 0));
+        }
+
+        ImGui::End();
+
         ImGui::Begin("Settings");
         ImGui::ColorEdit4("Square Color", glm::value_ptr(mSquareColor));
         ImGui::Separator();
@@ -152,10 +219,30 @@ public:
         ImGui::SliderFloat("Line Width", &mLineWidth, 0.01f, 0.5f);
         ImGui::ColorEdit4("Grid Color", glm::value_ptr(mGridColor));
         ImGui::ColorEdit4("Axis Color", glm::value_ptr(mAxisColor));
+
+        ImGui::Separator();
+
+        glm::vec3 camPos = mCamera->GetPosition();
+        glm::vec3 camRot = mCamera->GetRotation();
+        camRot = glm::degrees(camRot);  // Convert to degrees for display
+
+        if (ImGui::InputFloat3("Camera Position (X, Y, Z):", glm::value_ptr(camPos))) {
+            mCamera->SetPosition(camPos);
+        }
+        if (ImGui::InputFloat3("Camera Rotation (Euler angles):", glm::value_ptr(camRot))) {
+            mCamera->SetRotation(glm::radians(camRot));
+        }
+
+        if (ImGui::Button("Reset Camera")) {
+            mCamera->ResetView();
+        }
+
+        ImGui::End();
+
         ImGui::End();
     }
 
-    void OnEvent(Mantra::Event& event) override { mCameraController.OnEvent(event); }
+    void OnEvent(Mantra::Event& event) override { mCamera->OnEvent(event); }
 
     void CreateGrid() {
         mGridVA = Mantra::VertexArray::Create();
@@ -233,8 +320,39 @@ public:
         mShaderLibrary->Add(std::make_shared<Mantra::OpenGLShader>("grid", gridVertexSrc, gridFragmentSrc));
     }
 
+    void CreateFramebuffer(uint32_t width, uint32_t height) {
+        if (m_FBO) {
+            glDeleteFramebuffers(1, &m_FBO);
+            glDeleteTextures(1, &m_ColorAttachment);
+            glDeleteRenderbuffers(1, &m_RBO);
+        }
+
+        glGenFramebuffers(1, &m_FBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+
+        // color attachment (texture)
+        glGenTextures(1, &m_ColorAttachment);
+        glBindTexture(GL_TEXTURE_2D, m_ColorAttachment);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
+
+        // depth+stencil renderbuffer
+        glGenRenderbuffers(1, &m_RBO);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_RBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RBO);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        m_ViewportSize = {(float)width, (float)height};
+    }
+
 private:
-    Mantra::PerspectiveCameraController mCameraController;
+    std::unique_ptr<Mantra::Camera> mCamera;
 
     glm::vec4 mSquareColor = {0.2f, 0.3f, 0.4f, 1.0f};
 
@@ -250,6 +368,16 @@ private:
     glm::vec4 mGridColor = {0.5f, 0.5f, 0.5f, 0.5f};
     glm::vec4 mAxisColor = {1.0f, 1.0f, 1.0f, 0.8f};
     std::shared_ptr<Mantra::VertexArray> mGridVA;
+
+    // Camera info
+    glm::vec3 mCameraPosition = {0.0f, 0.0f, 5.0f};
+    glm::vec3 mCameraRotation = {0.0f, 0.0f, 0.0f};
+
+    // Framebuffer for the ImGui viewport
+    GLuint m_FBO = 0;
+    GLuint m_ColorAttachment = 0;
+    GLuint m_RBO = 0;
+    glm::vec2 m_ViewportSize = {1280.0f, 720.0f};
 };
 
 class Sandbox : public Mantra::Application
