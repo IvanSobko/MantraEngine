@@ -23,8 +23,6 @@ public:
 
 protected:
     void UpdateViewMatrix() override;
-
-    bool OnWindowResized(WindowResizeEvent& e);
     bool OnMouseScrolled(MouseScrolledEvent& e) override;
 
 private:

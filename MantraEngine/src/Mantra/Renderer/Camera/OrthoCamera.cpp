@@ -51,21 +51,18 @@ void OrthoCamera::OnUpdate(float deltaTime) {
 
     UpdateViewMatrix();
 }
- 
+
 void OrthoCamera::OnEvent(Event& event) {
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<MouseScrolledEvent>(std::bind(&OrthoCamera::OnMouseScrolled, this, std::placeholders::_1));
-    dispatcher.Dispatch<WindowResizeEvent>(std::bind(&OrthoCamera::OnWindowResized, this, std::placeholders::_1));
 }
 
-bool OrthoCamera::OnWindowResized(WindowResizeEvent& e) {
-    MLOG("OrthoCamera: Window resized to {}x{}", e.GetWidth(), e.GetHeight());
-    float aspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
+void OrthoCamera::SetViewportSize(uint32_t width, uint32_t height) {
+    mViewportSize = {(float)width, (float)height};
+    float aspectRatio = mViewportSize.x / mViewportSize.y;
     mProjectionBounds.x = -aspectRatio * mZoomLevel;
     mProjectionBounds.y = aspectRatio * mZoomLevel;
-
     UpdateProjectionMatrix();
-    return true;
 }
 
 bool OrthoCamera::OnMouseScrolled(MouseScrolledEvent& e) {
@@ -73,12 +70,8 @@ bool OrthoCamera::OnMouseScrolled(MouseScrolledEvent& e) {
     mPosition += GetForwardDirection() * scrollAmount;
     mZoomLevel = std::clamp(mZoomLevel - scrollAmount, 0.1f, 100.0f);
 
-    //TODO: add proper aspect ratio handling here instead of hardcoding 1.7f
-    float halfWidth = 1.7f * mZoomLevel;
-    float halfHeight = mZoomLevel;
-
-    mProjectionBounds = {-halfWidth, halfWidth, -halfHeight, halfHeight};
-
+    float aspectRatio = mViewportSize.x / mViewportSize.y;
+    mProjectionBounds = {-aspectRatio * mZoomLevel, aspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel};
     UpdateProjectionMatrix();
     return false;
 }

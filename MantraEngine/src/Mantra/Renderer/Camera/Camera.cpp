@@ -24,6 +24,11 @@ void Camera::ResetView() {
     UpdateViewMatrix();
 }
 
+void Camera::SetViewportSize(uint32_t width, uint32_t height) {
+    mViewportSize = {static_cast<float>(width), static_cast<float>(height)};
+    UpdateProjectionMatrix();
+}
+
 glm::vec3 Camera::GetUpDirection() const {
     return glm::rotate(GetQuatRotation(), glm::vec3(0.0f, 1.0f, 0.0f));
 }

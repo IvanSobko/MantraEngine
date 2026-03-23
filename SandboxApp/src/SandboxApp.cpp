@@ -202,8 +202,8 @@ public:
             uint32_t newH = (uint32_t)avail.y;
             if (newW != (uint32_t)m_ViewportSize.x || newH != (uint32_t)m_ViewportSize.y) {
                 CreateFramebuffer(newW, newH);
-                // Update camera aspect ratio if your camera exposes a setter:
-                // mCameraController.OnResize(newW, newH); // or equivalent API
+                m_ViewportSize = {newW, newH};
+                mCamera->SetViewportSize(newW, newH);
             }
 
             // ImGui expects a void* texture id for OpenGL textures:

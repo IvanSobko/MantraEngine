@@ -16,12 +16,12 @@ public:
     void OnUpdate(float deltaTime) override;
     void OnEvent(Event& event) override;
     void ResetView() override;
+    void SetViewportSize(uint32_t width, uint32_t height) override;
 
 protected:
     void UpdateViewMatrix() override;
     void UpdateProjectionMatrix() override;
 
-    bool OnWindowResized(WindowResizeEvent& e);
     virtual bool OnMouseScrolled(MouseScrolledEvent& e);
 
 private:

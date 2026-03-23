@@ -27,6 +27,7 @@ public:
 
     virtual void OnUpdate(float deltaTime) {}
     virtual void OnEvent(Event& event) {}
+    virtual void SetViewportSize(uint32_t width, uint32_t height);
 
     virtual void ResetView();
 
@@ -45,6 +46,8 @@ protected:
 
     glm::vec3 mPosition = {0.0f, 0.0f, 0.0f};
     glm::vec3 mRotation = {0.0f, 0.0f, 0.0f};  // pitch, yaw, roll
+
+    glm::vec2 mViewportSize = {1280.0f, 720.0f};
 };
 
 }  // namespace Mantra

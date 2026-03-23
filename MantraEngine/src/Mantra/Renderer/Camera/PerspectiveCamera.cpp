@@ -54,13 +54,11 @@ void PerspectiveCamera::OnEvent(Event& event) {
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<MouseScrolledEvent>(
         std::bind(&PerspectiveCamera::OnMouseScrolled, this, std::placeholders::_1));
-    dispatcher.Dispatch<WindowResizeEvent>(std::bind(&PerspectiveCamera::OnWindowResized, this, std::placeholders::_1));
 }
 
-bool PerspectiveCamera::OnWindowResized(WindowResizeEvent& e) {
-    mAspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
+void PerspectiveCamera::SetViewportSize(uint32_t width, uint32_t height) {
+    mAspectRatio = (float)width / (float)height;
     UpdateProjectionMatrix();
-    return true;
 }
 
 bool PerspectiveCamera::OnMouseScrolled(MouseScrolledEvent& e) {
