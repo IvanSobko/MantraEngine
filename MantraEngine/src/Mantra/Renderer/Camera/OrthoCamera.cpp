@@ -1,6 +1,13 @@
 #include "OrthoCamera.h"
 
+#include "Mantra/Events/ApplicationEvent.h"
+#include "Mantra/Events/MouseEvent.h"
+#include "Mantra/Input/Input.h"
+#include "Mantra/KeyCodes.h"
+
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Mantra {
 
@@ -10,28 +17,73 @@ OrthoCamera::OrthoCamera(float left, float right, float bottom, float top, float
     mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
 }
 
-void OrthoCamera::SetProjection(float left, float right, float bottom, float top, float nearPlane, float farPlane) {
-    mProjectionMatrix = glm::ortho(left, right, bottom, top, nearPlane, farPlane);
+void OrthoCamera::UpdateViewMatrix() {
+    glm::quat quatRotation = GetQuatRotation();
+    mViewMatrix = glm::translate(glm::mat4(1.0f), mPosition) * glm::mat4_cast(quatRotation);
+    // inverse because we want to move the world opposite to the camera's movement
+    mViewMatrix = glm::inverse(mViewMatrix);
     mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
 }
 
-void OrthoCamera::RecalculateViewMatrix() {
-    // Create rotation matrices for pitch, yaw, and roll
-    glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(mRotation.x), glm::vec3(1, 0, 0));  // Pitch
-    glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), glm::radians(mRotation.y), glm::vec3(0, 1, 0));  // Yaw
-    glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(mRotation.z), glm::vec3(0, 0, 1));  // Roll
-
-    // Combine rotations (order matters: Z * Y * X for typical camera behavior)
-    glm::mat4 rotation = rotationZ * rotationY * rotationX;
-
-    // Create translation matrix
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), mPosition);
-
-    // Combine transformation
-    glm::mat4 transform = translation * rotation;
-
-    mViewMatrix = glm::inverse(transform);
+void OrthoCamera::UpdateProjectionMatrix() {
+    mProjectionMatrix = glm::ortho(mProjectionBounds.x, mProjectionBounds.y, mProjectionBounds.z, mProjectionBounds.w,
+                                   mNearPlane, mFarPlane);
     mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
+}
+
+void OrthoCamera::OnUpdate(float deltaTime) {
+    if (Input::IsKeyPressed(ME_KEY_LEFT_ALT)) {
+        auto [x, y] = Input::GetMousePosition();
+        const glm::vec2& mouse{x, y};
+        glm::vec2 delta = (mouse - mPrevMousePosition) * 0.003f;
+        mPrevMousePosition = mouse;
+
+        if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_RIGHT)) {
+            mPosition += -GetRightDirection() * delta.x;
+            mPosition += GetUpDirection() * delta.y;
+        } else if (Input::IsMouseButtonPressed(ME_MOUSE_BUTTON_LEFT)) {
+            float rotationSpeed = 0.8f;
+            float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+            mRotation.y += yawSign * delta.x * rotationSpeed;
+            mRotation.x += delta.y * rotationSpeed;
+        }
+    }
+
+    UpdateViewMatrix();
+}
+
+void OrthoCamera::OnEvent(Event& event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<MouseScrolledEvent>(std::bind(&OrthoCamera::OnMouseScrolled, this, std::placeholders::_1));
+}
+
+void OrthoCamera::SetViewportSize(uint32_t width, uint32_t height) {
+    mViewportSize = {(float)width, (float)height};
+    float aspectRatio = mViewportSize.x / mViewportSize.y;
+    mProjectionBounds.x = -aspectRatio * mZoomLevel;
+    mProjectionBounds.y = aspectRatio * mZoomLevel;
+    UpdateProjectionMatrix();
+}
+
+bool OrthoCamera::OnMouseScrolled(MouseScrolledEvent& e) {
+    float scrollAmount = e.GetYOffset() * 0.1f;
+    mPosition += GetForwardDirection() * scrollAmount;
+    mZoomLevel = std::clamp(mZoomLevel - scrollAmount, 0.1f, 100.0f);
+
+    float aspectRatio = mViewportSize.x / mViewportSize.y;
+    mProjectionBounds = {-aspectRatio * mZoomLevel, aspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel};
+    UpdateProjectionMatrix();
+    return false;
+}
+
+void OrthoCamera::ResetView() {
+    mPosition = {0.0f, 0.0f, 0.0f};
+    mRotation = {0.0f, 0.0f, 0.0f};
+    mZoomLevel = 1.0f;
+    mProjectionBounds.z = -mZoomLevel;
+    mProjectionBounds.w = mZoomLevel;
+    UpdateProjectionMatrix();
+    UpdateViewMatrix();
 }
 
 }  // namespace Mantra
