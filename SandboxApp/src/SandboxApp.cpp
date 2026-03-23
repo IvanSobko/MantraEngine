@@ -14,8 +14,9 @@ class ExampleLayer : public Mantra::Layer
 {
 public:
     ExampleLayer() : Layer("Example") {
-
-        mCamera = std::make_unique<Mantra::PerspectiveCamera>(85.0f, 1280.0f / 720.0f, 0.1f, 1000.0f);
+        float aspectRatio = 1280.0f / 720.0f;
+        // mCamera = std::make_unique<Mantra::PerspectiveCamera>(85.0f, aspectRatio, 0.1f, 1000.0f);
+        mCamera = std::make_unique<Mantra::OrthoCamera>(-aspectRatio, aspectRatio, -1.0f, 1.0f, -100.0f, 100.0f);
 
         mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
 

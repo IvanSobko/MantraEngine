@@ -18,9 +18,7 @@ public:
     EditorCamera(float fov, float aspectRatio, float nearPlane, float farPlane);
 
     void SetPosition(const glm::vec3& position) override;
-
     void OnUpdate(float deltaTime) override;
-
     void ResetView() override;
 
 protected:

@@ -34,13 +34,17 @@ protected:
     virtual void UpdateViewMatrix() = 0;
     virtual void UpdateProjectionMatrix() = 0;
 
+    glm::vec3 GetUpDirection() const;
+    glm::vec3 GetRightDirection() const;
+    glm::vec3 GetForwardDirection() const;
+
 protected:
     glm::mat4 mProjectionMatrix{1.0f};
     glm::mat4 mViewMatrix{1.0f};
     glm::mat4 mViewProjectionMatrix{1.0f};
 
     glm::vec3 mPosition = {0.0f, 0.0f, 0.0f};
-    glm::vec3 mRotation = {0.0f, 0.0f, 0.0f};  // pitch, yaw, roll (ignoring roll for now)
+    glm::vec3 mRotation = {0.0f, 0.0f, 0.0f};  // pitch, yaw, roll
 };
 
 }  // namespace Mantra

@@ -13,33 +13,19 @@ public:
     PerspectiveCamera() = default;
     PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane);
 
-    float GetFOV() const { return mFOV; }
-    void SetFOV(float fov);
-
-    float GetAspectRatio() const { return mAspectRatio; }
-    void SetAspectRatio(float aspectRatio);
-
-    void SetPosition(const glm::vec3& position) override;
-    void SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
-
     void OnUpdate(float deltaTime) override;
     void OnEvent(Event& event) override;
-
     void ResetView() override;
 
 protected:
     void UpdateViewMatrix() override;
     void UpdateProjectionMatrix() override;
 
-    glm::vec3 GetUpDirection() const;
-    glm::vec3 GetRightDirection() const;
-    glm::vec3 GetForwardDirection() const;
-
     bool OnWindowResized(WindowResizeEvent& e);
     virtual bool OnMouseScrolled(MouseScrolledEvent& e);
 
 private:
-    float mFOV = 45.0f;
+    float mFOV = 60.0f;
     float mAspectRatio = 16.0f / 9.0f;
     float mNearPlane = 0.1f;
     float mFarPlane = 1000.0f;

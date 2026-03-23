@@ -1,5 +1,8 @@
 #include "Camera.h"
+
 #include "glm/gtc/matrix_transform.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Mantra {
 
@@ -19,6 +22,18 @@ void Camera::ResetView() {
     mPosition = {0.0f, 0.0f, 0.0f};
     mRotation = {0.0f, 0.0f, 0.0f};
     UpdateViewMatrix();
+}
+
+glm::vec3 Camera::GetUpDirection() const {
+    return glm::rotate(GetQuatRotation(), glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+glm::vec3 Camera::GetRightDirection() const {
+    return glm::rotate(GetQuatRotation(), glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
+glm::vec3 Camera::GetForwardDirection() const {
+    return glm::rotate(GetQuatRotation(), glm::vec3(0.0f, 0.0f, -1.0f));
 }
 
 }  // namespace Mantra
