@@ -9,6 +9,7 @@
 
 // Renderer
 #include "Mantra/Renderer/Buffer.h"
+#include "Mantra/Renderer/Framebuffer.h"
 #include "Mantra/Renderer/Renderer.h"
 #include "Mantra/Renderer/Shader.h"
 #include "Mantra/Renderer/Texture.h"
