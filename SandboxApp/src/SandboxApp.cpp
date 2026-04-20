@@ -18,7 +18,7 @@ public:
         mCamera = std::make_unique<Mantra::EditorCamera>(85.0f, aspectRatio, 0.1f, 1000.0f);
         // mCamera = std::make_unique<Mantra::OrthoCamera>(-aspectRatio, aspectRatio, -1.0f, 1.0f, -100.0f, 100.0f);
 
-        mShaderLibrary = std::make_unique<Mantra::ShaderLibrary>();
+        mGPUResources = std::make_unique<Mantra::GPUResourceManager>();
 
         Mantra::FramebufferSpecification spec;
         spec.height = 720;
@@ -27,111 +27,20 @@ public:
             {Mantra::FramebufferFormat::RGBA8, Mantra::FramebufferFormat::DEPTH24STENCIL8});
         mFramebuffer = Mantra::Framebuffer::Create(spec);
 
-        mSquareVA = Mantra::VertexArray::Create();
+        CreateCube();
 
-        // Vertex format: position (3 floats), tex coords (2 floats)
-        float squareVertices[5 * 4] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-
-                                       0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,
-
-                                       0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-
-                                       -0.5f, 0.5f,  0.0f, 0.0f, 1.0f};
-
-        std::shared_ptr<Mantra::VertexBuffer> squareVB =
-            Mantra::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
-        squareVB->SetLayout({
-            {Mantra::ShaderDataType::Float3, "a_Position"},
-            {Mantra::ShaderDataType::Float2, "a_TexCoord"},
-        });
-        mSquareVA->AddVertexBuffer(squareVB);
-
-        uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-        std::shared_ptr<Mantra::IndexBuffer> squareIB =
-            Mantra::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-        mSquareVA->SetIndexBuffer(squareIB);
-
-        mCubeVA = Mantra::VertexArray::Create();
-
-        // Cube vertices: position (3 floats) for all 6 faces
-        float cubeVertices[8 * 3] = {// Back face
-                                     -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-                                     // Front face
-                                     -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f};
-
-        std::shared_ptr<Mantra::VertexBuffer> cubeVB = Mantra::VertexBuffer::Create(cubeVertices, sizeof(cubeVertices));
-        cubeVB->SetLayout({{Mantra::ShaderDataType::Float3, "a_Position"}});
-        mCubeVA->AddVertexBuffer(cubeVB);
-
-        // Cube indices for all 6 faces (12 triangles)
-        uint32_t cubeIndices[36] = {// Back face
-                                    0, 1, 2, 2, 3, 0,
-                                    // Front face
-                                    4, 5, 6, 6, 7, 4,
-                                    // Left face
-                                    7, 3, 0, 0, 4, 7,
-                                    // Right face
-                                    1, 5, 6, 6, 2, 1,
-                                    // Bottom face
-                                    0, 1, 5, 5, 4, 0,
-                                    // Top face
-                                    3, 2, 6, 6, 7, 3};
-
-        std::shared_ptr<Mantra::IndexBuffer> cubeIB =
-            Mantra::IndexBuffer::Create(cubeIndices, sizeof(cubeIndices) / sizeof(uint32_t));
-        mCubeVA->SetIndexBuffer(cubeIB);
-
-        std::string cubeVertexSrc = R"(
-			#version 330 core
-			layout(location = 0) in vec3 a_Position;
-            uniform mat4 u_ViewProjection;
-            uniform mat4 u_Transform;
-			out vec3 v_Position;
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-			}
-		)";
-
-        std::string cubeFragmentSrc = R"(
-			#version 330 core
-			layout(location = 0) out vec4 color;
-            uniform vec4 u_Color;
-			in vec3 v_Position;
-			void main()
-			{
-				color = u_Color;
-			}
-		)";
-
-        mShaderLibrary->Add(std::make_shared<Mantra::OpenGLShader>("cube", cubeVertexSrc, cubeFragmentSrc));
-        mShaderLibrary->Load("../assets/shaders/texture.glsl");
-
-        mShaderLibrary->Get("texture")->Bind();
-        mShaderLibrary->Get("texture")->SetUniformInt("u_Texture", 0);
-
-        mRGBTexture = Mantra::Texture2D::Create("../assets/checkerboard.png");
-        // mRGBATexture = Mantra::Texture2D::Create("../assets/logo.png");
-
+        mGPUResources->LoadShader("texture", "../assets/shaders/texture.glsl");
         CreateGrid();
     }
 
     void OnUpdate(Mantra::Timestep ts) override {
-
         mFramebuffer->Bind();
-
         Mantra::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Mantra::RenderCommand::Clear();
-
         mCamera->OnUpdate(ts);
 
-        // Replace the grid rendering loop with a single large cube
-        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));  // Make it full size instead of 0.1f
-
         Mantra::Renderer::BeginScene(*mCamera);
-
-        auto gridShader = mShaderLibrary->Get("grid");
+        auto gridShader = mGPUResources->GetShader("grid");
         gridShader->Bind();
         gridShader->SetUniformFloat("u_GridSize", mGridSize);
         gridShader->SetUniformFloat("u_LineWidth", mLineWidth);
@@ -139,17 +48,22 @@ public:
         gridShader->SetUniformFloat4("u_AxisColor", mAxisColor);
         Mantra::Renderer::Submit(gridShader, mGridVA, glm::mat4(1.0f));
 
-        // Render one big cube
-        mShaderLibrary->Get("cube")->Bind();
-        mShaderLibrary->Get("cube")->SetUniformFloat4("u_Color", mSquareColor);
-        glm::vec3 pos(0.0f, 0.0f, 0.0f);  // Center it at origin
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-        Mantra::Renderer::Submit(mShaderLibrary->Get("cube"), mCubeVA, transform);
+        // Render scene instances
+        auto textureShader = mGPUResources->GetShader("texture");
+        for (const auto& instance : mScene.instances) {
+            const auto& mesh = mScene.meshes[instance.meshID];
+            const auto& material = mScene.materials[mesh.materialID];
 
-        glm::mat4 texTransform = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f));
+            // Query GPU resources by SceneID
+            auto vertexArray = mGPUResources->GetVertexArray(instance.meshID);
+            auto texture = mGPUResources->GetTexture(material.baseColorTextureID);
 
-        mRGBTexture->Bind();
-        Mantra::Renderer::Submit(mShaderLibrary->Get("texture"), mSquareVA, texTransform);
+            if (vertexArray && texture) {
+                texture->Bind();
+                glm::mat4 transform = BuildTransform(instance.transform);
+                Mantra::Renderer::Submit(textureShader, vertexArray, transform);
+            }
+        }
 
         Mantra::Renderer::EndScene();
         mFramebuffer->Unbind();
@@ -214,14 +128,13 @@ public:
             }
 
             // ImGui expects a void* texture id for OpenGL textures:
-            ImGui::Image((void*)mFramebuffer->GetColorAttachmentRendererID(), avail, ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void*)(intptr_t)mFramebuffer->GetColorAttachmentRendererID(), avail, ImVec2(0, 1),
+                         ImVec2(1, 0));
         }
 
         ImGui::End();
 
         ImGui::Begin("Settings");
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(mSquareColor));
-        ImGui::Separator();
         ImGui::Text("Grid Settings");
         ImGui::SliderFloat("Grid Size", &mGridSize, 0.1f, 10.0f);
         ImGui::SliderFloat("Line Width", &mLineWidth, 0.01f, 0.5f);
@@ -252,6 +165,109 @@ public:
 
     void OnEvent(Mantra::Event& event) override { mCamera->OnEvent(event); }
 
+    void CreateCube() {
+        Mantra::Mesh cubeMesh;
+        cubeMesh.name = "Cube";
+
+        cubeMesh.vertices = {
+            // Front (+Z)
+            {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 1.0f}},
+
+            // Back (-Z)
+            {{0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}},
+            {{-0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},
+            {{-0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},
+            {{0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},
+
+            // Left (-X)
+            {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}},
+            {{-0.5f, -0.5f, 0.5f}, {}, {1.0f, 0.0f}},
+            {{-0.5f, 0.5f, 0.5f}, {}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},
+
+            // Right (+X)
+            {{0.5f, -0.5f, 0.5f}, {}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},
+            {{0.5f, 0.5f, 0.5f}, {}, {0.0f, 1.0f}},
+
+            // Top (+Y)
+            {{-0.5f, 0.5f, 0.5f}, {}, {0.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.5f}, {}, {1.0f, 0.0f}},
+            {{0.5f, 0.5f, -0.5f}, {}, {1.0f, 1.0f}},
+            {{-0.5f, 0.5f, -0.5f}, {}, {0.0f, 1.0f}},
+
+            // Bottom (-Y)
+            {{-0.5f, -0.5f, -0.5f}, {}, {0.0f, 0.0f}},
+            {{0.5f, -0.5f, -0.5f}, {}, {1.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.5f}, {}, {1.0f, 1.0f}},
+            {{-0.5f, -0.5f, 0.5f}, {}, {0.0f, 1.0f}},
+        };
+
+        cubeMesh.indices = {0,  1,  2,  2,  3,  0,  4,  5,  6,  6,  7,  4,  8,  9,  10, 10, 11, 8,
+                            12, 13, 14, 14, 15, 12, 16, 17, 18, 18, 19, 16, 20, 21, 22, 22, 23, 20};
+
+        Mantra::SceneID cubeMeshID = mScene.AddMesh(cubeMesh);
+
+        // Load a texture from disk
+        Mantra::SceneID textureID =
+            mScene.LoadAndAddTexture("../assets/checkerboard.png", Mantra::TextureSemantic::BaseColor, true);
+
+        Mantra::Material cubeMaterial;
+        cubeMaterial.name = "CubeMaterial";
+        cubeMaterial.baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        cubeMaterial.baseColorTextureID = textureID;
+
+        mScene.meshes[cubeMeshID].materialID = mScene.AddMaterial(cubeMaterial);
+
+        Mantra::MeshInstance cubeInstance;
+        cubeInstance.meshID = cubeMeshID;
+        cubeInstance.transform.translation = {0.0f, 0.0f, 0.0f};
+        cubeInstance.transform.rotation = {0.0f, 0.0f, 0.0f};
+        cubeInstance.transform.scale = {1.0f, 1.0f, 1.0f};
+        mScene.AddInstance(cubeInstance);
+
+        cubeInstance.transform.translation = {2.0f, 0.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {-2.0f, 0.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {0.0f, 2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {0.0f, -2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {0.0f, 0.0f, 2.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {0.0f, 0.0f, -2.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.rotation = {glm::radians(45.0f), glm::radians(45.0f), 0.0f};
+        cubeInstance.transform.translation = {2.0f, 2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {-2.0f, -2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {2.0f, -2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+        cubeInstance.transform.translation = {-2.0f, 2.0f, 0.0f};
+        mScene.AddInstance(cubeInstance);
+
+        // Create GPU resources indexed by SceneID
+        mGPUResources->CreateVertexArrayFromMesh(cubeMeshID, mScene.meshes[cubeMeshID]);
+        if (textureID != Mantra::kInvalidSceneID) {
+            mGPUResources->CreateTextureFromAsset(textureID, mScene.textures[textureID]);
+        }
+    }
+
+    glm::mat4 BuildTransform(const Mantra::SceneTransform& transform) {
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), transform.translation);
+        glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), transform.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), transform.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), transform.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 scale = glm::scale(glm::mat4(1.0f), transform.scale);
+        return translation * rotationZ * rotationY * rotationX * scale;
+    }
+
     void CreateGrid() {
         mGridVA = Mantra::VertexArray::Create();
         // Large quad for the infinite grid (positioned at y=0 for x-z plane)
@@ -274,70 +290,14 @@ public:
             Mantra::IndexBuffer::Create(gridIndices, sizeof(gridIndices) / sizeof(uint32_t));
         mGridVA->SetIndexBuffer(gridIB);
 
-        // Grid shader
-        std::string gridVertexSrc = R"(
-            #version 330 core
-            layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec2 a_WorldPos;
-            
-            uniform mat4 u_ViewProjection;
-            
-            out vec2 v_WorldPos;
-            
-            void main()
-            {
-                v_WorldPos = a_WorldPos;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-            }
-        )";
-
-        std::string gridFragmentSrc = R"(
-            #version 330 core
-            layout(location = 0) out vec4 color;
-            
-            in vec2 v_WorldPos;
-            
-            uniform float u_GridSize;
-            uniform float u_LineWidth;
-            uniform vec4 u_GridColor;
-            uniform vec4 u_AxisColor;
-            
-            float grid(vec2 pos, float size) {
-                vec2 coord = pos / size;
-                vec2 grid_coord = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
-                float line = min(grid_coord.x, grid_coord.y);
-                return 1.0 - min(line, 1.0);
-            }
-            
-            void main()
-            {
-                float gridValue = grid(v_WorldPos, u_GridSize);
-                
-                // Create thicker lines for main axes (x=0 and z=0)
-                float axisX = smoothstep(0.0, u_LineWidth * 2.0, abs(v_WorldPos.x));
-                float axisZ = smoothstep(0.0, u_LineWidth * 2.0, abs(v_WorldPos.y));
-                
-                vec4 finalColor = mix(u_AxisColor, u_GridColor, min(axisX, axisZ));
-                
-                color = vec4(finalColor.rgb, gridValue * finalColor.a);
-                
-                if (color.a < 0.01) discard;
-            }
-        )";
-
-        mShaderLibrary->Add(std::make_shared<Mantra::OpenGLShader>("grid", gridVertexSrc, gridFragmentSrc));
+        mGPUResources->LoadShader("grid", "../assets/shaders/grid.glsl");
     }
 
 private:
     std::unique_ptr<Mantra::Camera> mCamera;
+    Mantra::Scene mScene;
 
-    glm::vec4 mSquareColor = {0.2f, 0.3f, 0.4f, 1.0f};
-
-    std::unique_ptr<Mantra::ShaderLibrary> mShaderLibrary;
-
-    std::shared_ptr<Mantra::VertexArray> mSquareVA;
-    std::shared_ptr<Mantra::VertexArray> mCubeVA;
-    std::shared_ptr<Mantra::Texture2D> mRGBTexture;  //, mRGBATexture;
+    std::unique_ptr<Mantra::GPUResourceManager> mGPUResources;
 
     //Grid settings
     float mGridSize = 1.0f;
@@ -351,7 +311,6 @@ private:
     glm::vec3 mCameraRotation = {0.0f, 0.0f, 0.0f};
 
     // Framebuffer for the ImGui viewport
-
     std::shared_ptr<Mantra::Framebuffer> mFramebuffer;
     glm::vec2 mViewportSize = {1280.0f, 720.0f};
 };

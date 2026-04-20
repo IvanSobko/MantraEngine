@@ -1,11 +1,11 @@
 project(MantraEngine)
 
-file(GLOB_RECURSE ENGINE_SOURCES 
+file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS 
     "src/*.cpp"
     "src/*.c"
 )
 
-file(GLOB_RECURSE ENGINE_HEADERS 
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS 
     "src/*.h"
     "src/*.hpp"
 )
