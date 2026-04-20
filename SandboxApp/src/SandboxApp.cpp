@@ -34,9 +34,6 @@ public:
         mShaderLibrary->Get("texture")->Bind();
         mShaderLibrary->Get("texture")->SetUniformInt("u_Texture", 0);
 
-        mRGBTexture = Mantra::Texture2D::Create("../assets/checkerboard.png");
-        // mRGBATexture = Mantra::Texture2D::Create("../assets/logo.png");
-
         CreateGrid();
     }
 
@@ -59,8 +56,7 @@ public:
         gridShader->SetUniformFloat4("u_AxisColor", mAxisColor);
         Mantra::Renderer::Submit(gridShader, mGridVA, glm::mat4(1.0f));
 
-        // Render the cube
-        mRGBTexture->Bind();
+        mSceneCubeTexture->Bind();
         const Mantra::MeshInstance& cubeInstance = mScene.instances[mCubeInstanceID];
         glm::mat4 transform = BuildTransform(cubeInstance.transform);
         Mantra::Renderer::Submit(mShaderLibrary->Get("texture"), mSceneCubeVA, transform);
@@ -214,9 +210,14 @@ public:
 
         mCubeMeshID = mScene.AddMesh(cubeMesh);
 
+        // Load a texture from disk
+        Mantra::SceneID textureID =
+            mScene.LoadAndAddTexture("../assets/checkerboard.png", Mantra::TextureSemantic::BaseColor, true);
+
         Mantra::Material cubeMaterial;
         cubeMaterial.name = "CubeMaterial";
         cubeMaterial.baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        cubeMaterial.baseColorTextureID = textureID;
         mCubeMaterialID = mScene.AddMaterial(cubeMaterial);
 
         mScene.meshes[mCubeMeshID].materialID = mCubeMaterialID;
@@ -229,6 +230,11 @@ public:
         mCubeInstanceID = mScene.AddInstance(cubeInstance);
 
         mSceneCubeVA = Mantra::CreateVAFromMesh(mScene.meshes[mCubeMeshID]);
+
+        // Upload texture to GPU via bridge
+        if (textureID != Mantra::kInvalidSceneID) {
+            mSceneCubeTexture = Mantra::CreateTextureFromAsset(mScene.textures[textureID]);
+        }
     }
 
     glm::mat4 BuildTransform(const Mantra::SceneTransform& transform) {
@@ -276,7 +282,7 @@ private:
     std::unique_ptr<Mantra::ShaderLibrary> mShaderLibrary;
 
     std::shared_ptr<Mantra::VertexArray> mSceneCubeVA;
-    std::shared_ptr<Mantra::Texture2D> mRGBTexture;
+    std::shared_ptr<Mantra::Texture2D> mSceneCubeTexture;
 
     //Grid settings
     float mGridSize = 1.0f;

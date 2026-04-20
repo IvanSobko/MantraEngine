@@ -21,7 +21,8 @@ class Texture2D : public Texture
 {
 public:
     static std::shared_ptr<Texture2D> Create(const std::string& path);
-    static std::shared_ptr<Texture2D> Create(uint32_t width, uint32_t height);
+    static std::shared_ptr<Texture2D> Create(uint32_t width, uint32_t height, uint32_t channels,
+                                             const uint8_t* pixelData);
 };
 
 }  // namespace Mantra

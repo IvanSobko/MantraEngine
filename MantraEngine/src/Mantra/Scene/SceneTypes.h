@@ -43,6 +43,12 @@ struct TextureAsset {
     std::string path;
     TextureSemantic semantic = TextureSemantic::BaseColor;
     bool sRGB = true;
+
+    // CPU-side pixel data
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t channels = 0;
+    std::vector<uint8_t> pixelData;
 };
 
 struct Material {

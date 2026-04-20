@@ -20,6 +20,7 @@
 #include "Mantra/Renderer/Camera/PerspectiveCamera.h"
 
 // Scene
-#include "Mantra/Scene/SceneBridge.h"
 #include "Mantra/Scene/Scene.h"
+#include "Mantra/Scene/SceneBridge.h"
 #include "Mantra/Scene/SceneTypes.h"
+#include "Mantra/Scene/TextureLoader.h"

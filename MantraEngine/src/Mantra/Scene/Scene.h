@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SceneTypes.h"
+#include "TextureLoader.h"
 
 namespace Mantra {
 
@@ -20,6 +21,19 @@ public:
     SceneID AddTexture(const TextureAsset& texture) {
         textures.push_back(texture);
         return static_cast<SceneID>(textures.size() - 1);
+    }
+
+    /**
+     * Load a texture from disk and add it to the scene.
+     * @return SceneID of the loaded texture, or kInvalidSceneID on failure
+     */
+    SceneID LoadAndAddTexture(const std::string& path, TextureSemantic semantic = TextureSemantic::BaseColor,
+                              bool sRGB = true) {
+        TextureAsset asset = TextureLoader::LoadImage(path, semantic, sRGB);
+        if (asset.pixelData.empty()) {
+            return kInvalidSceneID;  // Load failed
+        }
+        return AddTexture(asset);
     }
 
     SceneID AddInstance(const MeshInstance& instance) {

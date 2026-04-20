@@ -2,6 +2,7 @@
 
 #include "Mantra/Renderer/Buffer.h"
 #include "Mantra/Renderer/VertexArray.h"
+#include "Mantra/Renderer/Texture.h"
 
 namespace Mantra {
 
@@ -29,6 +30,14 @@ std::shared_ptr<VertexArray> CreateVAFromMesh(const Mesh& mesh) {
     vertexArray->SetIndexBuffer(indexBuffer);
 
     return vertexArray;
+}
+
+std::shared_ptr<Texture2D> CreateTextureFromAsset(const TextureAsset& texture) {
+    if (texture.pixelData.empty()) {
+        return nullptr;
+    }
+
+    return Texture2D::Create(texture.width, texture.height, texture.channels, texture.pixelData.data());
 }
 
 }  // namespace Mantra
