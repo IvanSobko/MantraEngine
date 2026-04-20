@@ -19,8 +19,9 @@
 #include "Mantra/Renderer/Camera/OrthoCamera.h"
 #include "Mantra/Renderer/Camera/PerspectiveCamera.h"
 
+#include "Mantra/Renderer/GPUResourceManager.h"
+
 // Scene
 #include "Mantra/Scene/Scene.h"
-#include "Mantra/Scene/SceneBridge.h"
 #include "Mantra/Scene/SceneTypes.h"
 #include "Mantra/Scene/TextureLoader.h"

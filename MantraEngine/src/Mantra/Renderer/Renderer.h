@@ -27,6 +27,7 @@ private:
         glm::mat4 ViewProjectionMatrix;
     };
 
+    //TODO remove raw pointer
     static SceneData* mSceneData;
 };
 
