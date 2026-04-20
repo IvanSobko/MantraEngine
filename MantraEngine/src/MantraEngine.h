@@ -18,3 +18,8 @@
 #include "Mantra/Renderer/Camera/EditorCamera.h"
 #include "Mantra/Renderer/Camera/OrthoCamera.h"
 #include "Mantra/Renderer/Camera/PerspectiveCamera.h"
+
+// Scene
+#include "Mantra/Scene/SceneBridge.h"
+#include "Mantra/Scene/Scene.h"
+#include "Mantra/Scene/SceneTypes.h"
