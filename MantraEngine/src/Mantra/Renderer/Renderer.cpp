@@ -10,6 +10,7 @@ void Renderer::Init() {
     RenderCommand::Init();
 }
 
+//TODO: make camera const
 void Renderer::BeginScene(Camera& camera) {
     mSceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 }
