@@ -53,6 +53,7 @@ struct TextureAsset {
 
 struct Material {
     std::string name;
+    std::string shaderName = "normal";
 
     glm::vec4 baseColor = glm::vec4(1.0f);
     glm::vec3 emissive = glm::vec3(0.0f);

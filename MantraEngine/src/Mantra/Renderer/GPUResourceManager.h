@@ -25,8 +25,8 @@ using SceneID = uint32_t;
 class GPUResourceManager
 {
 public:
-    GPUResourceManager() = default;
-    ~GPUResourceManager() = default;
+    GPUResourceManager();
+    ~GPUResourceManager();
 
     std::shared_ptr<Shader> LoadShader(const std::string& name, const std::string& filepath);
     void AddShader(const std::string& name, const std::shared_ptr<Shader>& shader);

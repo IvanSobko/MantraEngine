@@ -24,4 +24,3 @@
 // Scene
 #include "Mantra/Scene/Scene.h"
 #include "Mantra/Scene/SceneTypes.h"
-#include "Mantra/Scene/TextureLoader.h"

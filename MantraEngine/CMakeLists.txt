@@ -37,7 +37,11 @@ set(IMGUI_FILES ${IMGUI_FILES}
 # ========== stb_image ==============
 set(STB_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/stb_image)
 file(GLOB STB_FILES ${STB_DIR}/*.cpp ${STB_DIR}/*.h)
+# ================================
 
+# ========== tiny_obj_loader ==============
+set(TINY_OBJ_DIR ${CMAKE_SOURCE_DIR}/MantraEngine/libs/tinyobj)
+file(GLOB TINY_OBJ_FILES ${TINY_OBJ_DIR}/*.cpp ${TINY_OBJ_DIR}/*.h)
 # ================================
 
 if(MSVC)
@@ -55,6 +59,7 @@ add_library(${PROJECT_NAME} SHARED
     ${ENGINE_HEADERS}
     ${IMGUI_FILES}
     ${STB_FILES}
+    ${TINY_OBJ_FILES}
 )
 
 target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL glad spdlog::spdlog glm::glm)
@@ -65,6 +70,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/libs/spdlog/include
     ${PROJECT_SOURCE_DIR}/src
     ${STB_DIR}
+    ${TINY_OBJ_DIR}
 )
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "src/ME_PCH.h")

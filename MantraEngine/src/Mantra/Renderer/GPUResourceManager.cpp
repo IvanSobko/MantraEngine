@@ -6,6 +6,22 @@
 
 namespace Mantra {
 
+GPUResourceManager::GPUResourceManager() {
+    // Create a 1x1 white texture as default for textureless rendering
+    // Store at kInvalidSceneID so meshes with no texture default to white
+    uint8_t whitePixel[4] = {255, 255, 255, 255};  // RGBA white
+    auto defaultWhiteTexture = Texture2D::Create(1, 1, 4, whitePixel);
+    if (!defaultWhiteTexture) {
+        ME_CORE_ERROR("Failed to create default white texture");
+    } else {
+        mTextures[kInvalidSceneID] = defaultWhiteTexture;
+    }
+}
+
+GPUResourceManager::~GPUResourceManager() {
+    Clear();
+}
+
 std::shared_ptr<Shader> GPUResourceManager::LoadShader(const std::string& name, const std::string& filepath) {
     auto shader = Shader::Create(filepath);
     if (!shader) {
@@ -39,12 +55,18 @@ std::shared_ptr<Shader> GPUResourceManager::GetShader(const std::string& name) c
 
 std::shared_ptr<VertexArray> GPUResourceManager::CreateVertexArrayFromMesh(SceneID meshID, const Mesh& mesh) {
     std::vector<float> vertexData;
-    vertexData.reserve(mesh.vertices.size() * 5);
+    vertexData.reserve(mesh.vertices.size() * 8);  // pos(3) + normal(3) + uv(2)
 
     for (const SceneVertex& vertex : mesh.vertices) {
+        // Position
         vertexData.push_back(vertex.position.x);
         vertexData.push_back(vertex.position.y);
         vertexData.push_back(vertex.position.z);
+        // Normal
+        vertexData.push_back(vertex.normal.x);
+        vertexData.push_back(vertex.normal.y);
+        vertexData.push_back(vertex.normal.z);
+        // TexCoord
         vertexData.push_back(vertex.uv.x);
         vertexData.push_back(vertex.uv.y);
     }
@@ -53,7 +75,9 @@ std::shared_ptr<VertexArray> GPUResourceManager::CreateVertexArrayFromMesh(Scene
 
     auto vertexBuffer =
         VertexBuffer::Create(vertexData.data(), static_cast<uint32_t>(vertexData.size() * sizeof(float)));
-    vertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"}, {ShaderDataType::Float2, "a_TexCoord"}});
+    vertexBuffer->SetLayout({{ShaderDataType::Float3, "a_Position"},
+                             {ShaderDataType::Float3, "a_Normal"},
+                             {ShaderDataType::Float2, "a_TexCoord"}});
     vertexArray->AddVertexBuffer(vertexBuffer);
 
     std::vector<uint32_t> indices = mesh.indices;

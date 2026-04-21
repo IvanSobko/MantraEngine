@@ -15,7 +15,7 @@ class ExampleLayer : public Mantra::Layer
 public:
     ExampleLayer() : Layer("Example") {
         float aspectRatio = 1280.0f / 720.0f;
-        mCamera = std::make_unique<Mantra::EditorCamera>(85.0f, aspectRatio, 0.1f, 1000.0f);
+        mCamera = std::make_unique<Mantra::EditorCamera>(85.0f, aspectRatio, 0.01f, 1000.0f);
         // mCamera = std::make_unique<Mantra::OrthoCamera>(-aspectRatio, aspectRatio, -1.0f, 1.0f, -100.0f, 100.0f);
 
         mGPUResources = std::make_unique<Mantra::GPUResourceManager>();
@@ -29,7 +29,26 @@ public:
 
         CreateCube();
 
+        int meshID = mScene.LoadAndAddMesh("../assets/models/monkey.obj");
+        ME_INFO("Loaded mesh with ID {0}", meshID);
+        Mantra::Material material;
+        material.name = "MonkeyMaterial";
+        material.shaderName = "wireframe";
+        material.baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
+        mScene.meshes[meshID].materialID = mScene.AddMaterial(material);
+
+        Mantra::MeshInstance meshInstance;
+        meshInstance.meshID = meshID;
+        meshInstance.transform.translation = {0.0f, 0.0f, 4.0f};
+        meshInstance.transform.rotation = {0.0f, 0.0f, 0.0f};
+        meshInstance.transform.scale = {1.0f, 1.0f, 1.0f};
+        mScene.AddInstance(meshInstance);
+        mGPUResources->CreateVertexArrayFromMesh(meshID, mScene.meshes[meshID]);
+
         mGPUResources->LoadShader("texture", "../assets/shaders/texture.glsl");
+        mGPUResources->LoadShader("normal", "../assets/shaders/normal.glsl");
+        mGPUResources->LoadShader("wireframe", "../assets/shaders/wireframe.glsl");
+
         CreateGrid();
     }
 
@@ -49,20 +68,26 @@ public:
         Mantra::Renderer::Submit(gridShader, mGridVA, glm::mat4(1.0f));
 
         // Render scene instances
-        auto textureShader = mGPUResources->GetShader("texture");
         for (const auto& instance : mScene.instances) {
             const auto& mesh = mScene.meshes[instance.meshID];
             const auto& material = mScene.materials[mesh.materialID];
 
-            // Query GPU resources by SceneID
             auto vertexArray = mGPUResources->GetVertexArray(instance.meshID);
-            auto texture = mGPUResources->GetTexture(material.baseColorTextureID);
+            auto shader = mGPUResources->GetShader(material.shaderName);
 
-            if (vertexArray && texture) {
+            if (!vertexArray || !shader)
+                continue;
+
+            // texture shader requires a texture; bind it
+            if (material.shaderName == "texture") {
+                auto texture = mGPUResources->GetTexture(material.baseColorTextureID);
+                if (!texture)
+                    continue;  // Skip if no texture
                 texture->Bind();
-                glm::mat4 transform = BuildTransform(instance.transform);
-                Mantra::Renderer::Submit(textureShader, vertexArray, transform);
             }
+
+            glm::mat4 transform = BuildTransform(instance.transform);
+            Mantra::Renderer::Submit(shader, vertexArray, transform);
         }
 
         Mantra::Renderer::EndScene();
@@ -218,6 +243,7 @@ public:
 
         Mantra::Material cubeMaterial;
         cubeMaterial.name = "CubeMaterial";
+        cubeMaterial.shaderName = "texture";
         cubeMaterial.baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
         cubeMaterial.baseColorTextureID = textureID;
 
