@@ -40,6 +40,11 @@ public:
     void AddTexture(SceneID textureID, const std::shared_ptr<Texture2D>& texture);
     std::shared_ptr<Texture2D> GetTexture(SceneID textureID) const;
 
+    // Resource counts
+    uint32_t GetMeshCount() const { return mVertexArrays.size(); }
+    uint32_t GetTextureCount() const { return mTextures.size(); }
+    uint32_t GetShaderCount() const { return mShaders.size(); }
+
     void Clear();
 
 private:

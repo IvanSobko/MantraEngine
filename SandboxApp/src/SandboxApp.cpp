@@ -2,10 +2,12 @@
 #include <MantraEngine.h>
 
 #include <glad/glad.h>
+#include <deque>
 #include <iostream>
 #include "imgui.h"
 
 #include "Mantra/Renderer/OpenGL/OpenGLShader.h"
+#include "Mantra/Renderer/Renderer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -59,6 +61,9 @@ public:
         mCamera->OnUpdate(ts);
 
         Mantra::Renderer::BeginScene(*mCamera);
+
+        Mantra::Renderer::SetFrameTime(ts);
+
         auto gridShader = mGPUResources->GetShader("grid");
         gridShader->Bind();
         gridShader->SetUniformFloat("u_GridSize", mGridSize);
@@ -183,6 +188,33 @@ public:
             mCamera->ResetView();
         }
 
+        ImGui::End();
+
+        ImGui::Begin("Statistics");
+        auto frameStats = Mantra::Renderer::GetFrameStats();
+        mFpsHistory.push_back(frameStats.fps);
+        if (mFpsHistory.size() > 120) {
+            mFpsHistory.pop_front();
+        }
+
+        ImGui::Text("Frame Stats:");
+        ImGui::Text("  FPS: %.1f", frameStats.fps);
+        ImGui::Text("  Draw Calls: %u", frameStats.drawCalls);
+        ImGui::Text("  Vertices: %u", frameStats.verticesRendered);
+        ImGui::Text("  Triangles: %u", frameStats.trianglesRendered);
+        ImGui::Separator();
+
+        // FPS Chart
+        if (mFpsHistory.size() > 0) {
+            std::vector<float> fpsValues(mFpsHistory.begin(), mFpsHistory.end());
+            ImGui::PlotLines("FPS", fpsValues.data(), (int)fpsValues.size(), 0, nullptr, 0.0f, 200.0f, ImVec2(0, 80));
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Resource Counts:");
+        ImGui::Text("  Meshes: %u", mGPUResources->GetMeshCount());
+        ImGui::Text("  Textures: %u", mGPUResources->GetTextureCount());
+        ImGui::Text("  Shaders: %u", mGPUResources->GetShaderCount());
         ImGui::End();
 
         ImGui::End();
@@ -339,6 +371,9 @@ private:
     // Framebuffer for the ImGui viewport
     std::shared_ptr<Mantra::Framebuffer> mFramebuffer;
     glm::vec2 mViewportSize = {1280.0f, 720.0f};
+
+    // FPS history for chart
+    std::deque<float> mFpsHistory;
 };
 
 class Sandbox : public Mantra::Application
